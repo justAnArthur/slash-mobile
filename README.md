@@ -9,7 +9,7 @@
 2. Start the app
 
    ```bash
-    bun run start
+  bun run dev
    ```
 
 In the output, you'll find options to open the app in a
