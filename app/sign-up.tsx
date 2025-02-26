@@ -1,7 +1,12 @@
+import { signInStyles } from "@/app/sign-in"
+import { ThemedText } from "@/components/ThemedText"
+import { ThemedView } from "@/components/ThemedView"
+import { ThemedButton } from "@/components/ui/ThemedButton"
+import { ThemedInput } from "@/components/ui/ThemedInput"
 import { authClient } from "@/lib/auth"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { Button, TextInput, View } from "react-native"
+import { ImageBackground } from "react-native"
 
 export default function SignUpScreen() {
   const router = useRouter()
@@ -10,36 +15,50 @@ export default function SignUpScreen() {
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
 
-  const handleLogin = async () => {
-    await authClient.signUp.email({
+  const handleLSignUp = async () => {
+    const res = await authClient.signUp.email({
       email,
       password,
       name
     })
+
+    if (res.error) return
+
     router.push("/")
   }
 
   return (
-    <View>
-      <TextInput
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-        style={{ color: "white" }}
-      />
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={{ color: "white" }}
-      />
-      <TextInput
+    <ThemedView style={signInStyles.content}>
+      <ThemedText type="title" style={signInStyles.title}>
+        Sign Up
+      </ThemedText>
+
+      <ThemedInput placeholder="Name" value={name} onChangeText={setName} />
+
+      <ThemedInput placeholder="Email" value={email} onChangeText={setEmail} />
+      <ThemedInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        style={{ color: "white" }}
       />
-      <Button title="Login" onPress={handleLogin} />
-    </View>
+      <ThemedButton title="Sign Up" onPress={handleLSignUp} />
+
+      <ThemedText style={signInStyles.anotherOption}>
+        Already have an account?{" "}
+        <ThemedText type="link" onPress={() => router.replace("/sign-in")}>
+          Sign In
+        </ThemedText>
+      </ThemedText>
+
+      <ImageBackground
+        source={require("@/assets/images/bg-entry.png")}
+        style={signInStyles.backgroundGradient}
+      />
+
+      <ImageBackground
+        source={require("@/assets/images/stars.svg")}
+        style={signInStyles.backgroundStars}
+      />
+    </ThemedView>
   )
 }

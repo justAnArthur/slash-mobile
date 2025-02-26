@@ -32,7 +32,14 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/JetBrainsMono/JetBrainsMonoNL-Regular.ttf"]
+        }
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

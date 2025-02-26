@@ -1,16 +1,25 @@
 # Get started
 
-1. Install dependencies
+#### Install dependencies
 
-   ```bash
-   bun install
-   ```
+```bash
+bun install
+```
+#### ~ Set up backend URL from ngrok
 
-2. Start the app
+```
+EXPO_PUBLIC_BACKEND_URL=https://***.ngrok-free.app/
+```
 
-   ```bash
-  bun run dev
-   ```
+#### Start the app
+
+```bash
+bun run dev --clear
+```
+
+---
+
+>! Use browser preview and Expo Go
 
 In the output, you'll find options to open the app in a
 

@@ -44,7 +44,7 @@ export function IconSymbol({
       color={color}
       size={size}
       name={MAPPING[name]}
-      style={style}
+      // style={style}
     />
   )
 }
