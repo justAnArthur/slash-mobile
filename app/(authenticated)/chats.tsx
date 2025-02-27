@@ -1,17 +1,13 @@
+import { ChatCard } from "@/components/ChatCard"
 import { SearchBar } from "@/components/SearchBar"
 import { ThemedText } from "@/components/ThemedText"
 import { ThemedView } from "@/components/ThemedView"
+import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
 import { ThemedButton } from "@/components/ui/ThemedButton"
-import { ThemedModal } from "@/components/ui/ThemedModal"
 import { backend } from "@/lib/services/backend"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity
-} from "react-native"
+import { FlatList, StyleSheet, TouchableOpacity } from "react-native"
 
 const PAGE_SIZE = 10
 
@@ -19,6 +15,7 @@ interface User {
   id: string
   name: string
   image: string | null // Image can be a string or null
+  lastMessage: string | null
 }
 
 export default function Chats() {
@@ -28,7 +25,7 @@ export default function Chats() {
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [chats, setChats] = useState<User[]>([]) // State to store chat users
-  const [searchVisible, setSearchVisible] = useState(false) // Manage search popup visibility
+  const [dropdownVisible, setDropdownVisible] = useState(false) // Manage dropdown visibility
   const router = useRouter()
 
   const fetchUsers = async (newQuery = query, newPage = 1) => {
@@ -53,15 +50,17 @@ export default function Chats() {
     setLoading(false)
   }
 
-  const fetchChats = async () => {}
+  const fetchChats = async () => {
+    // Implement chat fetching logic if necessary
+  }
 
   useEffect(() => {
     if (query) {
       fetchUsers(query, 1)
-      setSearchVisible(true)
+      setDropdownVisible(true)
     } else {
       fetchChats()
-      setSearchVisible(false)
+      setDropdownVisible(false)
     }
     setPage(1)
   }, [query])
@@ -75,51 +74,55 @@ export default function Chats() {
   }
 
   const openChat = (userId: string) => {
-    // router.push(`/chat/${userId}`)
+    router.push(`/chat/${userId}`)
   }
 
   return (
-    <ThemedView>
+    <ThemedView style={styles.container}>
       <ThemedView style={styles.searchBarContainer}>
         <SearchBar onSearch={setQuery} />
       </ThemedView>
 
-      {/* Search Popup Modal */}
-      <ThemedModal
-        visible={searchVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <ThemedView style={styles.modalContainer}>
-          <FlatList
-            data={users}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => openChat(item.id)}>
-                <ThemedText style={styles.user}>{item.name}</ThemedText>
-              </TouchableOpacity>
-            )}
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={
-              loading ? (
-                <ActivityIndicator size="small" color="#0000ff" />
-              ) : null
-            }
+      {/* Search Dropdown */}
+      {dropdownVisible && (
+        <ThemedView style={styles.dropdownContainer}>
+          {!loading ? (
+            <FlatList
+              data={users}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <ChatCard
+                  avatar={item.image}
+                  username={item.name}
+                  lastMessage={null}
+                  onPress={() => openChat(item.id)}
+                />
+              )}
+              onEndReached={loadMore}
+              onEndReachedThreshold={0.5}
+            />
+          ) : (
+            <ThemedActivityIndicator size="small" />
+          )}
+          <ThemedButton
+            onPress={() => setDropdownVisible(false)}
+            title="Close"
           />
-          <ThemedButton onPress={() => setSearchVisible(false)} title="Close" />
         </ThemedView>
-      </ThemedModal>
+      )}
 
       {/* Show chats when not searching */}
-      {!searchVisible && (
+      {!dropdownVisible && (
         <FlatList
           data={chats}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => openChat(item.id)}>
-              <ThemedText style={styles.user}>{item.name}</ThemedText>
-            </TouchableOpacity>
+            <ChatCard
+              avatar={item.image}
+              username={item.name}
+              lastMessage={null}
+              onPress={() => openChat(item.id)}
+            />
           )}
         />
       )}
@@ -128,19 +131,29 @@ export default function Chats() {
 }
 
 const styles = StyleSheet.create({
-  modalContainer: { flex: 1, padding: 10, marginTop: 50 },
-  user: {
-    padding: 10,
-    fontSize: 16,
-    borderBottomWidth: 1,
-    borderColor: "#ddd"
+  container: {
+    flex: 1
   },
-  searchBarContainer: {
+  dropdownContainer: {
     position: "absolute",
-    top: 0,
+    top: 60,
     left: 0,
     right: 0,
-    zIndex: 1, // Ensure it's above other components
-    backgroundColor: "white" // Background color to cover anything behind
+    zIndex: 1,
+    padding: 10,
+    paddingHorizontal: 10,
+    gap: 10,
+    maxHeight: 400,
+    minHeight: 50
+  },
+  user: {
+    padding: 10,
+    fontSize: 16
+  },
+  searchBarContainer: {
+    position: "relative",
+    zIndex: 1,
+    paddingHorizontal: 10,
+    paddingBottom: 10
   }
 })

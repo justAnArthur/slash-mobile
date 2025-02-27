@@ -1,0 +1,80 @@
+import type React from "react"
+import { Image, StyleSheet, TouchableOpacity } from "react-native"
+import { ThemedText } from "./ThemedText"
+import { ThemedView } from "./ThemedView"
+
+interface ChatCardProps {
+  avatar: string | null // Avatar can be a string (URL) or null
+  username: string
+  lastMessage: string | null
+  onPress: () => void // Function to handle press action
+}
+
+export const ChatCard: React.FC<ChatCardProps> = ({
+  avatar,
+  username,
+  lastMessage,
+  onPress
+}) => {
+  let truncatedLastMessage: string
+  if (!lastMessage) {
+    truncatedLastMessage = "No messages yet"
+  } else if (lastMessage.length > 60) {
+    truncatedLastMessage = `${lastMessage.slice(0, 60)}...`
+  } else {
+    truncatedLastMessage = lastMessage
+  }
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      <ThemedView style={styles.avatarContainer}>
+        {avatar ? (
+          <Image source={{ uri: avatar }} style={styles.avatar} />
+        ) : (
+          <ThemedView style={styles.avatarPlaceholder}>
+            <ThemedText>{username.charAt(0)}</ThemedText>
+          </ThemedView>
+        )}
+      </ThemedView>
+      <ThemedView style={styles.infoContainer}>
+        <ThemedText style={styles.username}>{username}</ThemedText>
+        <ThemedText style={styles.lastMessage}>
+          {truncatedLastMessage}
+        </ThemedText>
+      </ThemedView>
+    </TouchableOpacity>
+  )
+}
+
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: "row",
+    padding: 15,
+    alignItems: "center"
+  },
+  avatarContainer: {
+    marginRight: 15
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20
+  },
+  avatarPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#ccc", // Placeholder background color
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  infoContainer: {
+    flex: 1
+  },
+  username: {
+    fontWeight: "bold",
+    fontSize: 16
+  },
+  lastMessage: {
+    fontSize: 14
+  }
+})

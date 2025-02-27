@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import React, { useState, useEffect, useRef } from "react"
 import {
   ActivityIndicator,
-  FlatList,
+  type FlatList,
   StyleSheet,
   Text,
   TextInput,
@@ -15,72 +15,52 @@ const PAGE_SIZE = 20
 
 const ChatScreen = () => {
   const router = useRouter()
-  const { userId } = useLocalSearchParams() // Get userId from route
-  const [messages, setMessages] = useState([])
-  const [newMessage, setNewMessage] = useState("")
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
+  const { userId } = useLocalSearchParams()
+  const [user, setUser] = useState<{
+    name: string
+    id: string
+    image: null | string
+  }>({ name: "", id: userId as string, image: null })
+  const [chatId, setChatId] = useState("")
   const flatListRef = useRef<FlatList>(null)
 
+  const fetchMessages = (page: number) => {
+    //logic here
+  }
+  const startChat = async (userId: string) => {
+    try {
+      console.log(user.id)
+      const userResponse = await backend.users[user.id].get()
+      setUser(userResponse.data)
+      const response = await backend.chats.start.post({
+        body: { user1Id: user.id }
+      })
+      setChatId(response.data.chatId)
+    } catch (error) {
+      console.error("Error fetching users:", error)
+    }
+    // fetch messages when got chatId;
+    fetchMessages(1)
+  }
   useEffect(() => {
-    fetchMessages(1) // Load initial messages
+    startChat(userId as string)
   }, [])
-
-  const fetchMessages = async (newPage: number) => {
-    if (loading) return
-
-    setLoading(true)
-    try {
-      const response = await backend["chat/messages"].get({
-        query: { userId, page: newPage }
-      })
-
-      if (newPage === 1) {
-        setMessages(response.data) // Reset messages
-      } else {
-        setMessages((prev) => [...response, ...prev.data]) // Prepend old messages
-      }
-
-      setHasMore(response.data.length === PAGE_SIZE)
-    } catch (error) {
-      console.error("Error fetching messages:", error)
-    }
-    setLoading(false)
-  }
-
-  const sendMessage = async () => {
-    if (!newMessage.trim()) return
-
-    try {
-      const response = await backend["chat/send"].post({
-        body: { userId, text: newMessage }
-      })
-
-      setMessages((prev) => [...prev, response.data]) // Append new message
-      setNewMessage("")
-
-      flatListRef.current?.scrollToEnd({ animated: true }) // Auto-scroll
-    } catch (error) {
-      console.error("Error sending message:", error)
-    }
-  }
-
-  const loadOlderMessages = () => {
-    if (hasMore) {
-      const nextPage = page + 1
-      setPage(nextPage)
-      fetchMessages(nextPage)
-    }
-  }
-
+  useEffect(
+    () => {
+      fetchMessages(/*page*/ 0)
+    },
+    [
+      /*page, ...*/
+    ]
+  )
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
 
-      <FlatList
+      {/*
+    <FlatList
         ref={flatListRef}
         data={messages}
         keyExtractor={(item) => item.id.toString()}
@@ -93,18 +73,23 @@ const ChatScreen = () => {
         onEndReachedThreshold={0.5}
         inverted // New messages at the bottom
         ListFooterComponent={
-          loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
+          loading ? <ThemedActivityIndicator size="small" /> : null
         }
       />
+
+    */}
 
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="Type a message..."
-          value={newMessage}
-          onChangeText={setNewMessage}
+          //value={newMessage}
+          //onChangeText={setNewMessage}
         />
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+        <TouchableOpacity
+          style={styles.sendButton}
+          onPress={() => {} /*sendMessage*/}
+        >
           <Text style={styles.sendText}>Send</Text>
         </TouchableOpacity>
       </View>
