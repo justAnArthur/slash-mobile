@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "@slash/mobile",
-    "slug": "@slash/mobile",
+    "slug": "slash-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.justanarthur.slashmobile"
     },
     "web": {
       "bundler": "metro",
@@ -43,6 +44,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "2fcde0b4-8fec-42f2-ba6c-8c9c910cdd6a"
+      }
     }
   }
 }

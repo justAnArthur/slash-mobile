@@ -69,7 +69,7 @@ export default function SignInScreen() {
 
       {/*absolute abstract images*/}
       <ImageBackground
-        source={require("@/assets/images/bg-entry.png")}
+        source={require("@/assets/images/bg-entry.webp")}
         style={styles.backgroundGradient}
       />
       <ImageBackground

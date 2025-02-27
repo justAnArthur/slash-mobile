@@ -51,7 +51,7 @@ export default function SignUpScreen() {
       </ThemedText>
 
       <ImageBackground
-        source={require("@/assets/images/bg-entry.png")}
+        source={require("@/assets/images/bg-entry.webp")}
         style={signInStyles.backgroundGradient}
       />
 
