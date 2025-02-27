@@ -40,7 +40,7 @@ export default function HomeScreen() {
           <ThemedText type="title" style={{ fontFamily: "JetBrainsMono" }}>
             {i18n.t("welcome")} {welcomeFromBackend} {session?.user.name}
           </ThemedText>
-          <HelloWave />
+          {/*<HelloWave /> */}
         </ThemedView>
 
         <ThemedLink
@@ -52,6 +52,16 @@ export default function HomeScreen() {
           }}
         >
           Settings
+        </ThemedLink>
+        <ThemedLink
+          href="/chats"
+          style={{
+            fontSize: 16,
+            fontWeight: "bold",
+            alignSelf: "flex-start"
+          }}
+        >
+          Chats
         </ThemedLink>
       </ParallaxScrollView>
     </>
