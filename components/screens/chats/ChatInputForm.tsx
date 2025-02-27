@@ -101,7 +101,10 @@ const UploadModalButton = <T extends UploadMessageTypeT>(
       >
         <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
           <View style={styles.modalContainer}>
-            <UploadForm onSubmit={handleOnSubmit} />
+            <UploadForm
+              onSubmit={handleOnSubmit}
+              onCanceled={() => setIsOpen(false)}
+            />
           </View>
         </TouchableWithoutFeedback>
       </Modal>
@@ -137,13 +140,15 @@ type Message<T extends MessageTypeT> = {
 
 type UploadFormProps<T extends UploadMessageTypeT> = {
   onSubmit: (type: T, data: MessageTypeDataTypes[T]) => void
+  onCanceled?: () => void
 }
 
 export const UploadForm = <
   Type extends UploadMessageTypeT,
   DataType extends MessageTypeDataTypes[Type]
 >({
-  onSubmit
+  onSubmit,
+  onCanceled
 }: UploadFormProps<Type>) => {
   const t = useI18nT("screens.chats.input")
 
@@ -222,6 +227,15 @@ export const UploadForm = <
         >
           <MaterialIcons name="gps-fixed" size={24} color="white" />
         </Pressable>
+
+        <View style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+          <Pressable
+            style={[buttonStyles.button, { paddingHorizontal: 12 }]}
+            onPress={onCanceled}
+          >
+            <MaterialIcons name="close" size={24} color="white" />
+          </Pressable>
+        </View>
       </ThemedView>
 
       {type && (
@@ -284,6 +298,7 @@ const styles = StyleSheet.create({
     padding: 24,
     display: "flex",
     flexDirection: "column",
+    alignItems: "center",
     borderWidth: 1.5,
     borderBottomWidth: 0,
     borderColor: "hsla(0,0%,20%,.76)"
@@ -292,10 +307,10 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    gap: 18,
-    paddingBottom: 18
+    gap: 18
   },
   uploadContent: {
+    paddingTop: 18,
     display: "flex",
     flexDirection: "column",
     gap: 18
