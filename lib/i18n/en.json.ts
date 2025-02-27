@@ -16,6 +16,12 @@ const en = {
     index: {
       settings: "Settings"
     },
+    chats: {
+      input: {
+        placeholder: "Type a message",
+        send: "Send"
+      }
+    },
     signIn: {
       title: "Sign In",
       email: "Email",

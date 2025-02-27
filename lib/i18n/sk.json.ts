@@ -18,6 +18,12 @@ const sk: Translations = {
     index: {
       settings: "Nastavenia"
     },
+    chats: {
+      input: {
+        placeholder: "Napíšte správu",
+        send: "Odoslať"
+      }
+    },
     signIn: {
       title: "Prihlásiť sa",
       email: "Email",

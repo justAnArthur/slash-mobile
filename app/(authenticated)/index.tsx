@@ -53,15 +53,16 @@ export default function HomeScreen() {
         >
           Settings
         </ThemedLink>
+
         <ThemedLink
-          href="/chats"
+          href="/(authenticated)/chats/test"
           style={{
             fontSize: 16,
             fontWeight: "bold",
             alignSelf: "flex-start"
           }}
         >
-          Chats
+          Test chat
         </ThemedLink>
       </ParallaxScrollView>
     </>

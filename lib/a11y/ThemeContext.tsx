@@ -1,4 +1,3 @@
-import { ThemedView } from "@/components/ThemedView"
 import { Themes } from "@/lib/a11y/themes"
 import { getItem, setItem } from "@/lib/utils/secure-store"
 import { StatusBar } from "expo-status-bar"
@@ -9,6 +8,7 @@ import {
   useMemo,
   useState
 } from "react"
+import { View } from "react-native"
 
 export const themeModes = ["light", "dark"] as const
 
@@ -68,7 +68,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         translucent={false}
       />
 
-      <ThemedView style={{ flex: 1 }}>{children}</ThemedView>
+      <View style={{ flex: 1, backgroundColor: theme.background }}>
+        {children}
+      </View>
     </ThemeContext.Provider>
   )
 }
