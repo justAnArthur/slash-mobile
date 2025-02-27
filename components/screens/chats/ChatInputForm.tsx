@@ -9,7 +9,8 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons"
 import { Image } from "expo-image"
 import * as ImagePicker from "expo-image-picker"
 import type { ImagePickerAsset } from "expo-image-picker/src/ImagePicker.types"
-import type { LocationObject } from "expo-location"
+import type { LocationObjectCoords } from "expo-location"
+import * as Location from "expo-location"
 import { useState } from "react"
 import {
   Modal,
@@ -130,7 +131,7 @@ type MessageTypeDataTypes = {
   [MessageType.TEXT]: string
   [MessageType.IMAGE_GALLERY]: ImagePickerAsset
   [MessageType.IMAGE_CAMERA]: ImagePickerAsset
-  [MessageType.LOCATION]: LocationObject
+  [MessageType.LOCATION]: LocationObjectCoords
 }
 
 type Message<T extends MessageTypeT> = {
@@ -151,6 +152,9 @@ export const UploadForm = <
   onCanceled
 }: UploadFormProps<Type>) => {
   const t = useI18nT("screens.chats.input")
+
+  const [locationPermissionStatus, requestLocationPermission] =
+    Location.useForegroundPermissions()
 
   const [type, setType] = useState<Type | null>(null)
   const [data, setData] = useState<DataType | null>(null)
@@ -187,18 +191,17 @@ export const UploadForm = <
 
   async function handleGeoPick() {
     // todo check not working | display map with current location
-    return
-    //   setType(UploadMessageType.LOCATION as Type)
-    //
-    //   const { status } = await Location.requestForegroundPermissionsAsync()
-    //   if (status !== "granted") {
-    //     alert("Permission to access location was denied")
-    //     return
-    //   }
-    //
-    //   const currentLocation = await Location.getCurrentPositionAsync()
-    //   console.log(currentLocation)
-    //   setData(currentLocation as DataType)
+    setType(UploadMessageType.LOCATION as Type)
+
+    const { status } = await requestLocationPermission()
+
+    if (status !== "granted") {
+      alert("Permission to access location was denied")
+      return
+    }
+
+    const currentLocation = await Location.getCurrentPositionAsync()
+    setData(currentLocation.coords as DataType)
   }
 
   function handleOnSubmit() {
@@ -220,11 +223,7 @@ export const UploadForm = <
           <Feather name="camera" size={24} color="white" />
         </Pressable>
 
-        <Pressable
-          style={buttonStyles.button}
-          onPress={handleGeoPick}
-          disabled={true}
-        >
+        <Pressable style={buttonStyles.button} onPress={handleGeoPick}>
           <MaterialIcons name="gps-fixed" size={24} color="white" />
         </Pressable>
 
@@ -259,10 +258,12 @@ export const UploadForm = <
 
           {[UploadMessageType.LOCATION as Type].includes(type) &&
             data &&
-            "coords" in data &&
-            data.coords && (
+            "latitude" in data &&
+            "longitude" in data &&
+            data.latitude &&
+            data.longitude && (
               <ThemedText type="default">
-                {`Latitude: ${data.coords.latitude}, Longitude: ${data.coords.longitude}`}
+                {`Latitude: ${data.latitude}, Longitude: ${data.longitude}`}
               </ThemedText>
             )}
 

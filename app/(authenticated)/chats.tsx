@@ -75,7 +75,7 @@ export default function Chats() {
   }
 
   const openChat = (userId: string) => {
-    router.push(`/chat/${userId}`)
+    // router.push(`/chat/${userId}`)
   }
 
   return (
