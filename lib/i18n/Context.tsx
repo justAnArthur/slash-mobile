@@ -39,7 +39,10 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
         sk
         // ja: { welcome: "こんにちは" } // just for coolness
       },
-      { defaultLocale, locale: defaultLocale }
+      {
+        defaultLocale,
+        locale: defaultLocale
+      }
     )
   )
 

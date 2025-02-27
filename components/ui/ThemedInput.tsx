@@ -63,3 +63,5 @@ const styles = StyleSheet.create({
     color: "hsla(0,0%,97%,.76)"
   }
 })
+
+export const inputStyles = styles
