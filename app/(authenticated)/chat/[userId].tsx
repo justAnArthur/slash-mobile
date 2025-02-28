@@ -29,7 +29,6 @@ const ChatScreen = () => {
   }
   const startChat = async (userId: string) => {
     try {
-      console.log(user.id)
       const userResponse = await backend.users[user.id].get()
       setUser(userResponse.data)
       const response = await backend.chats.start.post({
