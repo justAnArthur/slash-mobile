@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText"
 import { ThemedView } from "@/components/ThemedView"
-import { ChatInputForm } from "@/components/screens/chats/ChatInputForm"
+import { ChatInputForm } from "@/components/screens/chat/ChatInputForm"
 import { ThemedLink } from "@/components/ui/ThemedLink"
 import { useI18nT } from "@/lib/i18n/Context"
 import AntDesign from "@expo/vector-icons/AntDesign"
