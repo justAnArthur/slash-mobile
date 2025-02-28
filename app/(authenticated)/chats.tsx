@@ -1,46 +1,50 @@
-import { ChatCard } from "@/components/ChatCard"
-import { SearchBar } from "@/components/SearchBar"
-import { ThemedText } from "@/components/ThemedText"
+// Chats.tsx
 import { ThemedView } from "@/components/ThemedView"
+import { ChatCard } from "@/components/screens/chats/ChatCard"
+import { SearchBar } from "@/components/screens/chats/SearchBar"
 import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
-import { ThemedButton } from "@/components/ui/ThemedButton"
 import { backend } from "@/lib/services/backend"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
-import { FlatList, StyleSheet, TouchableOpacity } from "react-native"
+import { FlatList, StyleSheet, View } from "react-native"
 
 const PAGE_SIZE = 10
+
+interface LastMessage {
+  content: string | null
+  isImage: boolean
+  createdAt: Date
+  isMe: boolean
+}
 
 interface User {
   id: string
   name: string
-  image: string | null // Image can be a string or null
-  lastMessage: string | null
+  image: string | null
+  lastMessage: LastMessage | null
 }
 
 export default function Chats() {
   const [query, setQuery] = useState("")
-  const [users, setUsers] = useState<User[]>([])
-  const [page, setPage] = useState(1)
+  const [data, setData] = useState<User[]>([])
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
-  const [chats, setChats] = useState<User[]>([]) // State to store chat users
-  const [dropdownVisible, setDropdownVisible] = useState(false) // Manage dropdown visibility
+  const [page, setPage] = useState(1)
   const router = useRouter()
 
-  const fetchUsers = async (newQuery = query, newPage = 1) => {
+  const fetchUsers = async (newQuery: string, newPage: number) => {
     if (loading) return
 
     setLoading(true)
     try {
       const response = await backend.users.search.get({
-        query: { q: newQuery, page: newPage }
+        query: { q: newQuery, page: newPage, pageSize: PAGE_SIZE }
       })
 
       if (newPage === 1) {
-        setUsers(response.data) // Reset list if new search
+        setData(response.data) // Reset data if new search
       } else {
-        setUsers((prevUsers) => [...prevUsers, ...response.data]) // Append new data
+        setData((prevData) => [...prevData, ...response.data]) // Append new data
       }
 
       setHasMore(response.data.length === PAGE_SIZE) // Stop if less than PAGE_SIZE
@@ -50,26 +54,43 @@ export default function Chats() {
     setLoading(false)
   }
 
-  const fetchChats = async () => {
-    // Implement chat fetching logic if necessary
+  const fetchChats = async (newPage: number) => {
+    if (loading) return
+
+    setLoading(true)
+    try {
+      // Replace with your logic to fetch chats
+      const response = await backend.chats.get({
+        query: { page: newPage, pageSize: PAGE_SIZE }
+      })
+
+      setData((prevData) => [...prevData, ...response.data]) // Append new data
+      setHasMore(response.data.length === PAGE_SIZE) // Stop if less than PAGE_SIZE
+    } catch (error) {
+      console.error("Error fetching chats:", error)
+    }
+    setLoading(false)
   }
 
   useEffect(() => {
     if (query) {
       fetchUsers(query, 1)
-      setDropdownVisible(true)
+      setPage(1) // Reset page when searching
     } else {
-      fetchChats()
-      setDropdownVisible(false)
+      fetchChats(1)
+      setPage(1) // Reset page when not searching
     }
-    setPage(1)
   }, [query])
 
   const loadMore = () => {
     if (hasMore) {
       const nextPage = page + 1
       setPage(nextPage)
-      fetchUsers(query, nextPage)
+      if (query) {
+        fetchUsers(query, nextPage)
+      } else {
+        fetchChats(nextPage)
+      }
     }
   }
 
@@ -79,51 +100,26 @@ export default function Chats() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={styles.searchBarContainer}>
+      <View style={styles.searchBarContainer}>
         <SearchBar onSearch={setQuery} />
-      </ThemedView>
+      </View>
 
-      {/* Search Dropdown */}
-      {dropdownVisible && (
-        <ThemedView style={styles.dropdownContainer}>
-          {!loading ? (
-            <FlatList
-              data={users}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <ChatCard
-                  avatar={item.image}
-                  username={item.name}
-                  lastMessage={null}
-                  onPress={() => openChat(item.id)}
-                />
-              )}
-              onEndReached={loadMore}
-              onEndReachedThreshold={0.5}
-            />
-          ) : (
-            <ThemedActivityIndicator size="small" />
-          )}
-          <ThemedButton
-            onPress={() => setDropdownVisible(false)}
-            title="Close"
-          />
-        </ThemedView>
-      )}
-
-      {/* Show chats when not searching */}
-      {!dropdownVisible && (
+      {loading ? (
+        <ThemedActivityIndicator size="small" />
+      ) : (
         <FlatList
-          data={chats}
-          keyExtractor={(item) => item.id.toString()}
+          data={data}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ChatCard
               avatar={item.image}
               username={item.name}
-              lastMessage={null}
+              lastMessage={item.lastMessage}
               onPress={() => openChat(item.id)}
             />
           )}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
         />
       )}
     </ThemedView>
@@ -134,25 +130,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
-  dropdownContainer: {
-    position: "absolute",
-    top: 60,
-    left: 0,
-    right: 0,
-    zIndex: 1,
-    padding: 10,
-    paddingHorizontal: 10,
-    gap: 10,
-    maxHeight: 400,
-    minHeight: 50
-  },
-  user: {
-    padding: 10,
-    fontSize: 16
-  },
   searchBarContainer: {
-    position: "relative",
-    zIndex: 1,
     paddingHorizontal: 10,
     paddingBottom: 10
   }

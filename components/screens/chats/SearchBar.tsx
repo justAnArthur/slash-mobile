@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { StyleSheet } from "react-native"
 
-import { ThemedView } from "./ThemedView"
-import { ThemedInput } from "./ui/ThemedInput"
+import { ThemedView } from "@/components/ThemedView"
+import { ThemedInput } from "@/components/ui/ThemedInput"
 export function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
   const [searchQuery, setSearchQuery] = useState("")
 

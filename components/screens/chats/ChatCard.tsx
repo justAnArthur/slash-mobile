@@ -1,13 +1,19 @@
+import { ThemedText } from "@/components/ThemedText"
+import { ThemedView } from "@/components/ThemedView"
+import { Avatar } from "@/components/screens/common/Avatar"
 import type React from "react"
 import { Image, StyleSheet, TouchableOpacity } from "react-native"
-import { Avatar } from "./Avatar"
-import { ThemedText } from "./ThemedText"
-import { ThemedView } from "./ThemedView"
 
+export interface LastMessage {
+  content: string | null
+  isImage: boolean
+  createdAt: Date
+  isMe: boolean
+}
 interface ChatCardProps {
   avatar: string | null // Avatar can be a string (URL) or null
   username: string
-  lastMessage: string | null
+  lastMessage: LastMessage | null
   onPress: () => void // Function to handle press action
 }
 
@@ -18,14 +24,24 @@ export const ChatCard: React.FC<ChatCardProps> = ({
   onPress
 }) => {
   let truncatedLastMessage: string
+
   if (!lastMessage) {
     truncatedLastMessage = "No messages yet"
-  } else if (lastMessage.length > 60) {
-    truncatedLastMessage = `${lastMessage.slice(0, 60)}...`
+  } else if (lastMessage.isImage) {
+    truncatedLastMessage = "Image"
+  } else if (lastMessage.content) {
+    if (lastMessage.content.length > 60) {
+      truncatedLastMessage = `${lastMessage.content.slice(0, 60)}...`
+    } else {
+      truncatedLastMessage = lastMessage.content
+    }
   } else {
-    truncatedLastMessage = lastMessage
+    truncatedLastMessage = "No messages yet"
   }
 
+  if (lastMessage?.isMe) {
+    truncatedLastMessage = `Me: ${truncatedLastMessage}`
+  }
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <Avatar username={username} avatar={avatar} />

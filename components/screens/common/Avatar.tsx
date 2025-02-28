@@ -1,7 +1,7 @@
+import { ThemedText } from "@/components/ThemedText"
+import { ThemedView } from "@/components/ThemedView"
 import type React from "react"
 import { Image, StyleSheet } from "react-native"
-import { ThemedText } from "./ThemedText"
-import { ThemedView } from "./ThemedView"
 
 interface AvatarProps {
   avatar: string | null // Avatar can be a string (URL) or null

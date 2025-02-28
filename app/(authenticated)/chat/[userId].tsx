@@ -1,15 +1,13 @@
-import { Avatar } from "@/components/Avatar"
 import { ThemedText } from "@/components/ThemedText"
 import { ThemedView } from "@/components/ThemedView"
 import { ChatInputForm } from "@/components/screens/chats/ChatInputForm"
+import { Avatar } from "@/components/screens/common/Avatar"
 import { ThemedLink } from "@/components/ui/ThemedLink"
 import { backend } from "@/lib/services/backend"
 import { AntDesign } from "@expo/vector-icons"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import React, { useState, useEffect, useRef } from "react"
 import { type FlatList, StyleSheet } from "react-native"
-
-const PAGE_SIZE = 20
 
 const ChatScreen = () => {
   const router = useRouter()
@@ -30,7 +28,7 @@ const ChatScreen = () => {
       const userResponse = await backend.users[user.id].get()
       setUser(userResponse.data)
       const response = await backend.chats.start.post({
-        body: { user1Id: user.id }
+        user1Id: user.id
       })
       setChatId(response.data.chatId)
     } catch (error) {
@@ -41,7 +39,6 @@ const ChatScreen = () => {
   }
   useEffect(() => {
     startChat(userId as string)
-    console.log(AntDesign.font)
   }, [])
   useEffect(
     () => {
