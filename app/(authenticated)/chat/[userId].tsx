@@ -1,15 +1,13 @@
+import { Avatar } from "@/components/Avatar"
+import { ThemedText } from "@/components/ThemedText"
+import { ThemedView } from "@/components/ThemedView"
+import { ChatInputForm } from "@/components/screens/chats/ChatInputForm"
+import { ThemedLink } from "@/components/ui/ThemedLink"
 import { backend } from "@/lib/services/backend"
+import { AntDesign } from "@expo/vector-icons"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import React, { useState, useEffect, useRef } from "react"
-import {
-  ActivityIndicator,
-  type FlatList,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from "react-native"
+import { type FlatList, StyleSheet } from "react-native"
 
 const PAGE_SIZE = 20
 
@@ -43,6 +41,7 @@ const ChatScreen = () => {
   }
   useEffect(() => {
     startChat(userId as string)
+    console.log(AntDesign.font)
   }, [])
   useEffect(
     () => {
@@ -53,85 +52,49 @@ const ChatScreen = () => {
     ]
   )
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
+    <ThemedView style={styles.content}>
+      <ThemedView style={styles.header}>
+        <ThemedLink href="/chats">
+          <AntDesign name="arrowleft" size={20} />
+        </ThemedLink>
 
-      {/*
-    <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={[styles.message, item.isMine && styles.myMessage]}>
-            <Text>{item.text}</Text>
-          </View>
-        )}
-        onEndReached={loadOlderMessages}
-        onEndReachedThreshold={0.5}
-        inverted // New messages at the bottom
-        ListFooterComponent={
-          loading ? <ThemedActivityIndicator size="small" /> : null
-        }
-      />
-
-    */}
-
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type a message..."
-          //value={newMessage}
-          //onChangeText={setNewMessage}
-        />
-        <TouchableOpacity
-          style={styles.sendButton}
-          onPress={() => {} /*sendMessage*/}
+        <ThemedView
+          style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
         >
-          <Text style={styles.sendText}>Send</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <Avatar username={user.name} avatar={user.image} />
+          <ThemedText type="title">{user.name}</ThemedText>
+        </ThemedView>
+        <ThemedLink href="/chats">
+          <AntDesign name="infocirlceo" size={20} />
+        </ThemedLink>
+      </ThemedView>
+
+      <ThemedView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <ThemedText type="default">"content"</ThemedText>
+      </ThemedView>
+
+      <ChatInputForm onSubmit={console.log} />
+    </ThemedView>
   )
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
-  backButton: { padding: 10 },
-  backText: { fontSize: 16, color: "blue" },
-  message: {
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 8,
-    backgroundColor: "#ddd",
-    alignSelf: "flex-start"
+  content: {
+    padding: 24,
+    display: "flex",
+    flexDirection: "column",
+    gap: 18,
+    height: "100%"
   },
-  myMessage: {
-    backgroundColor: "#007bff",
-    alignSelf: "flex-end",
-    color: "#fff"
-  },
-  inputContainer: {
+  header: {
+    display: "flex",
     flexDirection: "row",
-    borderTopWidth: 1,
-    padding: 10,
-    alignItems: "center"
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10
-  },
-  sendButton: {
-    marginLeft: 10,
-    padding: 10,
-    backgroundColor: "#007bff",
-    borderRadius: 8
-  },
-  sendText: { color: "#fff" }
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12
+  }
 })
 
 export default ChatScreen

@@ -1,5 +1,6 @@
 import type React from "react"
 import { Image, StyleSheet, TouchableOpacity } from "react-native"
+import { Avatar } from "./Avatar"
 import { ThemedText } from "./ThemedText"
 import { ThemedView } from "./ThemedView"
 
@@ -24,17 +25,10 @@ export const ChatCard: React.FC<ChatCardProps> = ({
   } else {
     truncatedLastMessage = lastMessage
   }
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      <ThemedView style={styles.avatarContainer}>
-        {avatar ? (
-          <Image source={{ uri: avatar }} style={styles.avatar} />
-        ) : (
-          <ThemedView style={styles.avatarPlaceholder}>
-            <ThemedText>{username.charAt(0)}</ThemedText>
-          </ThemedView>
-        )}
-      </ThemedView>
+      <Avatar username={username} avatar={avatar} />
       <ThemedView style={styles.infoContainer}>
         <ThemedText style={styles.username}>{username}</ThemedText>
         <ThemedText style={styles.lastMessage}>
