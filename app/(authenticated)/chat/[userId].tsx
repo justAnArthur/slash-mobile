@@ -18,17 +18,17 @@ const ChatScreen = () => {
     image: null | string
   }>({ name: "", id: userId as string, image: null })
   const [chatId, setChatId] = useState("")
-
   const [hasMore, setHasMore] = useState(true)
   const [messages, setMessages] = useState<
     {
       id: string
       content: string | null
-      imageUrl: string | null
+      type: "IMAGE" | "TEXT" | "LOCATION"
       senderId: string
       createdAt: Date
     }[]
   >([])
+
   const [page, setPage] = useState(1)
   const flatListRef = useRef<FlatList>(null)
 
@@ -37,13 +37,12 @@ const ChatScreen = () => {
 
     try {
       const response = await backend.messages[chatId].get({
-        query: { page: newPage, pageSize: 20 }
+        query: { page: newPage, pageSize: 10 }
       })
       if (response.data) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          ...response.data.messages
-        ])
+        setMessages((prevMessages) => {
+          return [...prevMessages, ...response.data.messages]
+        })
         setPage(newPage)
         setHasMore(response.data.pagination.totalPages > page) // Check if more pages exist
       }
@@ -66,17 +65,19 @@ const ChatScreen = () => {
     startChat()
   }, [])
   useEffect(() => {
-    fetchMessages(page)
-  }, [page])
-  useEffect(() => {
     fetchMessages(1)
   }, [chatId])
+
   const sendMessage = async ({
     type,
     data
   }: { type: string; data: string }) => {
-    if (type === "TEXT") {
-      const response = await backend.messages.post({ chatId, content: data })
+    if (["TEXT", "LOCATION"].includes(type)) {
+      const response = await backend.messages.post({
+        chatId,
+        content: data,
+        type
+      })
       console.log(response)
     }
   }

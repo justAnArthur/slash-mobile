@@ -6,7 +6,7 @@ import { Image, StyleSheet, TouchableOpacity } from "react-native"
 
 export interface LastMessage {
   content: string | null
-  isImage: boolean
+  type: "TEXT" | "IMAGE" | "LOCATION"
   createdAt: Date
   isMe: boolean
 }
@@ -27,8 +27,8 @@ export const ChatCard: React.FC<ChatCardProps> = ({
 
   if (!lastMessage) {
     truncatedLastMessage = "No messages yet"
-  } else if (lastMessage.isImage) {
-    truncatedLastMessage = "Image"
+  } else if (lastMessage.type !== "TEXT") {
+    truncatedLastMessage = `${lastMessage.type.charAt(0)}${lastMessage.type.slice(1).toLowerCase()}`
   } else if (lastMessage.content) {
     if (lastMessage.content.length > 60) {
       truncatedLastMessage = `${lastMessage.content.slice(0, 60)}...`
