@@ -22,7 +22,7 @@ import {
 } from "react-native"
 
 type ChatInputFormProps = {
-  onSubmit: (message: Message<MessageTypeT>) => void
+  onSubmit: (message: Message<MessageTypeT>) => Promise<void>
 }
 
 export const ChatInputForm = ({ onSubmit }: ChatInputFormProps) => {

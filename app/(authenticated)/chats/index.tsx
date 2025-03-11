@@ -46,9 +46,9 @@ export default function ChatsPage() {
     return fetchChats(nextPage)
   }
 
-  function openChat(userId: string) {
+  function openChat(chatId: string) {
     // @ts-ignore
-    router.push(`/chats/${userId}`)
+    router.push(`/chats/${chatId}`)
   }
 
   return (

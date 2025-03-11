@@ -10,10 +10,10 @@ export interface LastMessage {
   isMe: boolean
 }
 interface ChatCardProps {
-  avatar: string | null // Avatar can be a string (URL) or null
+  avatar: string | null
   username: string
   lastMessage: LastMessage | null
-  onPress: () => void // Function to handle press action
+  onPress: () => void
 }
 
 export const ChatCard: React.FC<ChatCardProps> = ({

@@ -1,6 +1,8 @@
-import { ChatCard } from "@/components/screens/chats/ChatCard"
+import { ChatCard, type LastMessage } from "@/components/screens/chats/ChatCard"
 import { Avatar } from "@/components/screens/common/Avatar"
 import { ThemedButton } from "@/components/ui/ThemedButton"
+import { ThemedInput } from "@/components/ui/ThemedInput"
+import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
 import { backend } from "@/lib/services/backend"
 import { useRouter } from "expo-router"
@@ -8,12 +10,9 @@ import React, { useEffect, useState } from "react"
 import {
   Modal,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   type TouchableOpacityProps,
-  TouchableWithoutFeedback,
-  View
+  TouchableWithoutFeedback
 } from "react-native"
 
 export function FindUserModalButton(props: TouchableOpacityProps) {
@@ -23,12 +22,8 @@ export function FindUserModalButton(props: TouchableOpacityProps) {
     setModalVisible(!modalVisible)
   }
 
-  const closeModal = () => {
-    setModalVisible(false)
-  }
-
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <TouchableOpacity {...props} onPress={toggleModal} />
 
       <Modal
@@ -37,27 +32,39 @@ export function FindUserModalButton(props: TouchableOpacityProps) {
         visible={modalVisible}
         onRequestClose={toggleModal}
       >
-        <TouchableWithoutFeedback onPress={closeModal}>
-          <View style={styles.overlay}>
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <ThemedView style={styles.overlay}>
             <TouchableWithoutFeedback>
               <ThemedView style={styles.modalContainer}>
-                <FindUserForm />
+                <FindUserForm closeModal={() => setModalVisible(false)} />
               </ThemedView>
             </TouchableWithoutFeedback>
-          </View>
+          </ThemedView>
         </TouchableWithoutFeedback>
       </Modal>
-    </View>
+    </ThemedView>
   )
 }
 
-function FindUserForm() {
-  const router = useRouter()
+type User = {
+  id: string
+  name: string
+  email: string
+  image: string | null
+  lastMessage: LastMessage
+}
 
+type FindUserFormProps = {
+  closeModal: () => void
+}
+
+function FindUserForm({ closeModal }: FindUserFormProps) {
+  const router = useRouter()
   const minQueryLength = 2
   const [queryText, setQueryText] = useState("")
-  const [users, setUsers] = useState([])
-  const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [chatName, setChatName] = useState("")
+  const [users, setUsers] = useState<User[]>([])
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([])
 
   useEffect(() => {
     if (queryText.length < minQueryLength) {
@@ -67,61 +74,78 @@ function FindUserForm() {
 
     const timeout = setTimeout(() => {
       backend.users.search
-        .get({
-          query: { q: queryText, page: 1, pageSize: 5 }
-        })
+        .get({ query: { q: queryText, page: 1, pageSize: 5 } })
         .then((response: any) => setUsers(response?.data || []))
     }, 300)
 
     return () => clearTimeout(timeout)
   }, [queryText])
 
-  async function sendAndOpenChat(userId: string) {
-    await backend.chats
-      .post("/start") // @ts-ignore
-      .then(() => router.push(`/chats/${userId}`))
+  async function createChat() {
+    if (selectedUsers.length === 0) return
+
+    const userIds = selectedUsers.map((user) => user.id)
+    const response = await backend.chats.post({ userIds, name: chatName })
+    if (response?.data?.chatId) {
+      closeModal()
+      router.push(`/chats/${response.data.chatId}`)
+    }
   }
 
-  if (selectedUser)
-    return (
-      <View style={styles.form}>
-        <Avatar avatar={selectedUser.image} username={selectedUser.name} />
-        <Text>{selectedUser.name}</Text>
-        <Text>{selectedUser.email}</Text>
-
-        <ThemedButton
-          title="Send Message"
-          onPress={() => sendAndOpenChat(selectedUser.id)}
-        />
-      </View>
-    )
-
   return (
-    <View style={styles.form}>
-      {queryText.length > minQueryLength &&
-        (users.length > 0 ? (
-          <View style={styles.userList}>
-            {users.map((user: any) => (
-              <ChatCard
-                key={user.id}
-                avatar={user.image}
-                username={user.name}
-                lastMessage={user.lastMessage}
-                onPress={() => setSelectedUser(user)}
-              />
-            ))}
-          </View>
-        ) : (
-          <Text>No users found</Text>
-        ))}
+    <ThemedView style={styles.form}>
+      {selectedUsers.length > 0 && (
+        <ThemedView style={styles.selectedUsers}>
+          {selectedUsers.length > 1 ? (
+            <ThemedInput
+              placeholder="Chat name"
+              onChangeText={setChatName}
+              value={chatName}
+            />
+          ) : (
+            <ThemedText>Add 1 more person to create group chat</ThemedText>
+          )}
+          {selectedUsers.map((user) => (
+            <ThemedView key={user.id} style={styles.userItem}>
+              <Avatar avatar={user.image} username={user.name} />
+              <ThemedText>{user.name}</ThemedText>
+            </ThemedView>
+          ))}
+          <ThemedButton title="Create Chat" onPress={createChat} />
+        </ThemedView>
+      )}
 
-      <TextInput
+      <ThemedInput
         style={styles.input}
         placeholder="Search..."
         value={queryText}
         onChangeText={setQueryText}
       />
-    </View>
+
+      {queryText.length >= minQueryLength && (
+        <ThemedView style={styles.userList}>
+          {users.length > 0 ? (
+            users.map((user) => (
+              <ChatCard
+                key={user.id}
+                avatar={user.image}
+                username={user.name}
+                lastMessage={user.lastMessage}
+                onPress={() =>
+                  setSelectedUsers((prev) =>
+                    prev.find((u) => u.id === user.id)
+                      ? prev.filter((u) => u.id !== user.id)
+                      : [...prev, user]
+                  )
+                }
+              />
+            ))
+          ) : (
+            <ThemedText>No users found</ThemedText>
+          )}
+        </ThemedView>
+      )}
+    </ThemedView>
   )
 }
 
@@ -143,11 +167,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 8,
     alignItems: "center",
-
-    boxShadow:
-      "inset 2px 4px 16px 0 hsla(0,0%,97%,.06),0 24px 24px -16px rgba(5,5,5,.09),0 6px 13px 0 rgba(5,5,5,.1),0 6px 4px -4px rgba(5,5,5,.1),0 5px 1.5px -4px rgba(5,5,5,.25)",
-    backgroundColor: "rgba(40,40,40,0.7)",
-    shadowColor: "rgba(5,5,5,0.1)"
+    backgroundColor: "rgba(40,40,40,0.7)"
   },
   form: {
     width: "100%",
@@ -161,10 +181,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     backgroundColor: "hsla(0,0%,7%,.25)",
     borderRadius: 24,
-    display: "flex",
     fontSize: 14,
     height: 36,
-    lineHeight: 1.5,
     color: "hsla(0,0%,97%,.7)"
   },
   userList: {
@@ -172,9 +190,17 @@ const styles = StyleSheet.create({
     flexDirection: "column-reverse",
     gap: 6
   },
+  selectedUsers: {
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 8
+  },
   userItem: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "hsla(0,0%,97%,.1)",
     padding: 12,
-    borderRadius: 20
+    borderRadius: 20,
+    gap: 8
   }
 })

@@ -11,14 +11,18 @@ import React, { useEffect, useRef, useState } from "react"
 import { FlatList, StyleSheet } from "react-native"
 
 const ChatScreen = () => {
-  const { userId } = useLocalSearchParams()
-  const [user, setUser] = useState<{
+  const { chatId } = useLocalSearchParams()
+  const [chat, setChat] = useState<{
     name: string
-    id: string
-    image: null | string
-  }>({ name: "", id: userId as string, image: null })
-  const [chatId, setChatId] = useState("")
-  const [hasMore, setHasMore] = useState(true)
+    image: string | null
+    type: string
+    participants: { userId: string; name: string; image: string | null }[]
+  }>({
+    name: "",
+    image: null,
+    type: "",
+    participants: []
+  })
   const [messages, setMessages] = useState<
     {
       id: string
@@ -29,12 +33,12 @@ const ChatScreen = () => {
     }[]
   >([])
 
+  const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
   const flatListRef = useRef<FlatList>(null)
 
   const fetchMessages = async (newPage: number) => {
     if (!chatId) return
-
     try {
       const response = await backend.messages[chatId].get({
         query: { page: newPage, pageSize: 10 }
@@ -44,41 +48,38 @@ const ChatScreen = () => {
           return [...prevMessages, ...response.data.messages]
         })
         setPage(newPage)
-        setHasMore(response.data.pagination.totalPages > page) // Check if more pages exist
+        setHasMore(response.data.pagination.totalPages > page)
       }
     } catch (error) {
       console.error("Error fetching messages:", error)
     }
   }
-  const startChat = async () => {
-    try {
-      const userResponse = await backend.users[user.id].get()
-      setUser(userResponse.data)
 
-      const response = await backend.chats.start.post({ user1Id: user.id })
-      setChatId(response.data.chatId)
+  const fetchChat = async () => {
+    if (!chatId) return
+    try {
+      const response = await backend.chats[chatId].get()
+      if (response.data) {
+        setChat(response.data.chat)
+      }
     } catch (error) {
-      console.error("Error fetching users:", error)
+      console.error("Error fetching chat:", error)
     }
   }
   useEffect(() => {
-    startChat()
-  }, [])
-  useEffect(() => {
+    fetchChat()
     fetchMessages(1)
-  }, [chatId])
+  }, [])
 
   const sendMessage = async ({
     type,
     data
   }: { type: string; data: string }) => {
     if (["TEXT", "LOCATION"].includes(type)) {
-      const response = await backend.messages.post({
-        chatId,
+      const response = await backend.messages[chatId].post({
         content: data,
         type
       })
-      console.log(response)
     }
   }
   return (
@@ -91,8 +92,28 @@ const ChatScreen = () => {
         <ThemedView
           style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
         >
-          <Avatar username={user.name} avatar={user.image} />
-          <ThemedText type="title">{user.name}</ThemedText>
+          {chat.type === "group" ? (
+            <>
+              <Avatar username={chat.name} avatar={chat.image} />
+              <ThemedText type="title">{chat.name}</ThemedText>
+            </>
+          ) : (
+            <>
+              {chat.participants.length > 0 ? (
+                <>
+                  <Avatar
+                    username={chat.participants[0].name}
+                    avatar={chat.participants[0].image}
+                  />
+                  <ThemedText type="title">
+                    {chat.participants[0].name}
+                  </ThemedText>
+                </>
+              ) : (
+                <ThemedText type="title">No participants</ThemedText>
+              )}
+            </>
+          )}
         </ThemedView>
         <ThemedLink href="/chats">
           <AntDesign name="infocirlceo" size={20} />
@@ -109,15 +130,15 @@ const ChatScreen = () => {
               message={item.content}
               time={item.createdAt}
               isMe={Boolean(item.isMe)}
-              name={user.name}
-              image=""
+              name={item.name}
+              image={item.image}
             />
           )}
-          inverted // Makes the newest messages appear at the bottom
+          inverted
           onEndReached={() => {
-            if (hasMore) fetchMessages(page + 1) // Load next page
+            if (hasMore) fetchMessages(page + 1)
           }}
-          onEndReachedThreshold={0.2} // Load earlier messages when scrolled ~20% up
+          onEndReachedThreshold={0.2}
         />
       </ThemedView>
 
