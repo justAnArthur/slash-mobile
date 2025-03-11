@@ -1,6 +1,6 @@
-import { ThemedText } from "@/components/ThemedText"
-import { ThemedView } from "@/components/ThemedView"
 import { Avatar } from "@/components/screens/common/Avatar"
+import { ThemedText } from "@/components/ui/ThemedText"
+import { ThemedView } from "@/components/ui/ThemedView"
 import type React from "react"
 import { Image, StyleSheet, TouchableOpacity } from "react-native"
 

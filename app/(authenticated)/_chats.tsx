@@ -1,8 +1,8 @@
-// Chats.tsx
-import { ThemedView } from "@/components/ThemedView"
 import { ChatCard } from "@/components/screens/chats/ChatCard"
 import { SearchBar } from "@/components/screens/chats/SearchBar"
 import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
+// _chats.tsx
+import { ThemedView } from "@/components/ui/ThemedView"
 import { backend } from "@/lib/services/backend"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
@@ -24,7 +24,7 @@ interface User {
   lastMessage: LastMessage | null
 }
 
-export default function Chats() {
+export default function _chats() {
   const [query, setQuery] = useState("")
   const [data, setData] = useState<User[]>([])
   const [loading, setLoading] = useState(false)

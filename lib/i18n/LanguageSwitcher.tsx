@@ -1,6 +1,6 @@
-import { ThemedText } from "@/components/ThemedText"
-import { ThemedView } from "@/components/ThemedView"
 import { ThemedButton } from "@/components/ui/ThemedButton"
+import { ThemedText } from "@/components/ui/ThemedText"
+import { ThemedView } from "@/components/ui/ThemedView"
 import { locales, useI18n } from "@/lib/i18n/Context"
 import { StyleSheet, View } from "react-native"
 

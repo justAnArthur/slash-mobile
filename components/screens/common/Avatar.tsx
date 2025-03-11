@@ -1,5 +1,5 @@
-import { ThemedText } from "@/components/ThemedText"
-import { ThemedView } from "@/components/ThemedView"
+import { ThemedText } from "@/components/ui/ThemedText"
+import { ThemedView } from "@/components/ui/ThemedView"
 import type React from "react"
 import { Image, StyleSheet } from "react-native"
 
