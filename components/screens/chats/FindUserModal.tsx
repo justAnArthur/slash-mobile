@@ -1,4 +1,6 @@
 import { ChatCard } from "@/components/screens/chats/ChatCard"
+import { Avatar } from "@/components/screens/common/Avatar"
+import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedView } from "@/components/ui/ThemedView"
 import { backend } from "@/lib/services/backend"
 import { useRouter } from "expo-router"
@@ -52,9 +54,10 @@ export function FindUserModalButton(props: TouchableOpacityProps) {
 function FindUserForm() {
   const router = useRouter()
 
-  const minQueryLength = 3
+  const minQueryLength = 2
   const [queryText, setQueryText] = useState("")
   const [users, setUsers] = useState([])
+  const [selectedUser, setSelectedUser] = useState<any>(null)
 
   useEffect(() => {
     if (queryText.length < minQueryLength) {
@@ -73,10 +76,25 @@ function FindUserForm() {
     return () => clearTimeout(timeout)
   }, [queryText])
 
-  function openChat(userId: string) {
-    // @ts-ignore
-    router.push(`/chats/${userId}`)
+  async function sendAndOpenChat(userId: string) {
+    await backend.chats
+      .post("/start") // @ts-ignore
+      .then(() => router.push(`/chats/${userId}`))
   }
+
+  if (selectedUser)
+    return (
+      <View style={styles.form}>
+        <Avatar avatar={selectedUser.image} username={selectedUser.name} />
+        <Text>{selectedUser.name}</Text>
+        <Text>{selectedUser.email}</Text>
+
+        <ThemedButton
+          title="Send Message"
+          onPress={() => sendAndOpenChat(selectedUser.id)}
+        />
+      </View>
+    )
 
   return (
     <View style={styles.form}>
@@ -89,7 +107,7 @@ function FindUserForm() {
                 avatar={user.image}
                 username={user.name}
                 lastMessage={user.lastMessage}
-                onPress={() => openChat(user.id)}
+                onPress={() => setSelectedUser(user)}
               />
             ))}
           </View>

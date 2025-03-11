@@ -3,7 +3,7 @@ import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator
 import { ThemedView } from "@/components/ui/ThemedView"
 import { backend } from "@/lib/services/backend"
 import { useRouter } from "expo-router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FlatList, StyleSheet } from "react-native"
 
 const PAGE_SIZE = 10
@@ -21,11 +21,11 @@ export default function ChatsPage() {
 
     setLoading(true)
     try {
-      // Replace with your logic to fetch chats
       const response = await backend.chats.get({
         query: { page: newPage, pageSize: PAGE_SIZE }
       })
 
+      // @ts-ignore
       setUsers((prev) => [...prev, ...response.data])
       setHasMore(response.data.length === PAGE_SIZE)
     } catch (error) {
@@ -33,6 +33,10 @@ export default function ChatsPage() {
     }
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchChats(page)
+  }, [])
 
   async function loadMore() {
     if (!hasMore) return
