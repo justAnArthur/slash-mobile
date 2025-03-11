@@ -2,7 +2,11 @@ import { buttonStyles } from "@/components/ui/ThemedButton"
 import { useTheme } from "@/lib/a11y/ThemeContext"
 import { Link, type LinkProps } from "expo-router"
 
-export const ThemedLink = ({ style, ...props }: LinkProps) => {
+export const ThemedLink = ({
+  style,
+  defaultStyles,
+  ...props
+}: LinkProps & { defaultStyles?: boolean }) => {
   const { currentThemeMode } = useTheme()
   const isDarkMode = currentThemeMode === "dark"
 
@@ -10,7 +14,7 @@ export const ThemedLink = ({ style, ...props }: LinkProps) => {
     <Link
       {...props}
       style={[
-        buttonStyles.button,
+        !defaultStyles && buttonStyles.button,
         isDarkMode && buttonStyles.buttonDark,
         style
       ]}

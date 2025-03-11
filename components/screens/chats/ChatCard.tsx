@@ -1,8 +1,7 @@
 import { Avatar } from "@/components/screens/common/Avatar"
 import { ThemedText } from "@/components/ui/ThemedText"
-import { ThemedView } from "@/components/ui/ThemedView"
 import type React from "react"
-import { Image, StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
 
 export interface LastMessage {
   content: string | null
@@ -43,23 +42,25 @@ export const ChatCard: React.FC<ChatCardProps> = ({
     truncatedLastMessage = `Me: ${truncatedLastMessage}`
   }
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <Avatar username={username} avatar={avatar} />
-      <ThemedView style={styles.infoContainer}>
+      <View style={styles.infoContainer}>
         <ThemedText style={styles.username}>{username}</ThemedText>
         <ThemedText style={styles.lastMessage}>
           {truncatedLastMessage}
         </ThemedText>
-      </ThemedView>
+      </View>
     </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
     flexDirection: "row",
-    padding: 15,
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: "hsla(0,0%,97%,.1)",
+    padding: 12,
+    borderRadius: 20
   },
   avatarContainer: {
     marginRight: 15

@@ -6,8 +6,8 @@ import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
 import { backend } from "@/lib/services/backend"
 import { AntDesign } from "@expo/vector-icons"
-import { useLocalSearchParams, useRouter } from "expo-router"
-import React, { useState, useEffect, useRef } from "react"
+import { useLocalSearchParams } from "expo-router"
+import React, { useEffect, useRef, useState } from "react"
 import { FlatList, StyleSheet } from "react-native"
 
 const ChatScreen = () => {
