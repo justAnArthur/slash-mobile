@@ -1,6 +1,5 @@
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedText } from "@/components/ui/ThemedText"
-import { ThemedView } from "@/components/ui/ThemedView"
 import { themeModes, useTheme } from "@/lib/a11y/ThemeContext"
 import { useI18nT } from "@/lib/i18n/Context"
 import { StyleSheet, View } from "react-native"
@@ -10,7 +9,7 @@ export const ThemeSwitcher = () => {
   const { currentThemeMode, setCurrentThemeMode } = useTheme()
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <ThemedText style={styles.header}>
         Current theme mode: {currentThemeMode}
       </ThemedText>
@@ -20,11 +19,11 @@ export const ThemeSwitcher = () => {
             key={themeMode}
             title={t(themeMode)}
             onPress={() => setCurrentThemeMode(themeMode)}
-            style={{ flex: 1 }}
+            style={{ flex: 1, width: "auto" }}
           />
         ))}
       </View>
-    </ThemedView>
+    </View>
   )
 }
 
@@ -35,6 +34,7 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   buttonContainer: {
+    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",

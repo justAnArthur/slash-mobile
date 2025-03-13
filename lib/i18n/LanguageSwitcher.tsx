@@ -1,6 +1,5 @@
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedText } from "@/components/ui/ThemedText"
-import { ThemedView } from "@/components/ui/ThemedView"
 import { locales, useI18n } from "@/lib/i18n/Context"
 import { StyleSheet, View } from "react-native"
 
@@ -8,7 +7,7 @@ export const LanguageSwitcher = () => {
   const { currentLocale, setCurrentLocale, i18n } = useI18n()
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <ThemedText style={styles.header}>
         Current Locale: {currentLocale}
       </ThemedText>
@@ -22,7 +21,7 @@ export const LanguageSwitcher = () => {
           />
         ))}
       </View>
-    </ThemedView>
+    </View>
   )
 }
 

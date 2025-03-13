@@ -4,64 +4,49 @@ import { StyleSheet, TextInput, type TextInputProps } from "react-native"
 
 export const ThemedInput = ({
   multiline,
+  style,
   ...props
 }: PropsWithoutRef<TextInputProps>) => {
-  const { currentThemeMode } = useTheme()
-  const isDarkMode = currentThemeMode === "dark"
+  const { theme } = useTheme()
+  const styles = useStyles()
 
   return (
     <TextInput
       {...props}
-      style={
-        multiline
-          ? [styles.textarea, isDarkMode && styles.textareaDark]
-          : [styles.input, isDarkMode && styles.inputDark]
-      }
-      placeholderTextColor={
-        isDarkMode ? "hsla(0,0%,97%,.76)" : "hsla(0,0%,20%,.76)"
-      }
+      style={multiline ? [styles.textarea, style] : [styles.input, style]}
+      placeholderTextColor={theme.mutedForeground}
       multiline={multiline}
       numberOfLines={multiline ? 4 : 1}
     />
   )
 }
 
-const styles = StyleSheet.create({
-  input: {
-    width: "100%",
-    backgroundColor: "hsla(0,0%,97%,.05)",
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: "transparent",
-    fontSize: 14,
-    color: "hsla(0,0%,20%,.76)",
-    // height: 52,
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    // @ts-ignore
-    transition: "all .2s"
-  },
-  inputDark: {
-    backgroundColor: "hsla(0,0%,97%,.05)",
-    color: "hsla(0,0%,97%,.76)"
-  },
-  textarea: {
-    width: "100%",
-    backgroundColor: "hsla(0,0%,97%,.05)",
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: "transparent",
-    fontSize: 14,
-    lineHeight: 1.4,
-    color: "hsla(0,0%,20%,.76)",
-    paddingLeft: 18,
-    paddingRight: 18,
-    transition: "all .2s"
-  },
-  textareaDark: {
-    backgroundColor: "hsla(0,0%,20%,.05)",
-    color: "hsla(0,0%,97%,.76)"
-  }
-})
+function useStyles() {
+  const { theme } = useTheme()
 
-export const inputStyles = styles
+  return StyleSheet.create({
+    input: {
+      borderColor: theme.input,
+      color: theme.foreground,
+      width: "100%",
+      borderRadius: 12,
+      borderWidth: 2,
+      fontSize: 14,
+      paddingHorizontal: 18,
+      paddingVertical: 12
+    },
+    textarea: {
+      borderColor: theme.input,
+      color: theme.foreground,
+      width: "100%",
+      borderRadius: 12,
+      borderWidth: 2,
+      fontSize: 14,
+      lineHeight: 1.4,
+      paddingLeft: 18,
+      paddingRight: 18
+    }
+  })
+}
+
+export const useInputStyles = useStyles

@@ -1,21 +1,21 @@
 import { type PropsWithChildren, useState } from "react"
-import { StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
 
 import { IconSymbol } from "@/components/ui/IconSymbol"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
-import { Themes } from "@/lib/a11y/themes"
-import { useColorScheme } from "@/lib/utils/hooks/useColorScheme"
+import { useTheme } from "@/lib/a11y/ThemeContext"
 
 export function Collapsible({
   children,
   title
 }: PropsWithChildren & { title: string }) {
   const [isOpen, setIsOpen] = useState(false)
-  const theme = useColorScheme() ?? "light"
+
+  const styles = useStyles()
 
   return (
-    <ThemedView>
+    <ThemedView style={styles.container}>
       <TouchableOpacity
         style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
@@ -25,25 +25,37 @@ export function Collapsible({
           name="chevron.right"
           size={18}
           weight="medium"
-          color={theme === "light" ? Themes.light.icon : Themes.dark.icon}
+          color={styles.icon.color}
           style={{ transform: [{ rotate: isOpen ? "90deg" : "0deg" }] }}
         />
 
         <ThemedText type="defaultSemiBold">{title}</ThemedText>
       </TouchableOpacity>
-      {isOpen && <ThemedView style={styles.content}>{children}</ThemedView>}
+
+      {isOpen && <View style={styles.content}>{children}</View>}
     </ThemedView>
   )
 }
 
-const styles = StyleSheet.create({
-  heading: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6
-  },
-  content: {
-    marginTop: 6,
-    marginLeft: 24
-  }
-})
+function useStyles() {
+  const { theme, isDarkMode } = useTheme()
+
+  return StyleSheet.create({
+    container: {
+      backgroundColor: theme.card,
+      borderRadius: 8,
+      padding: 12
+    },
+    heading: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6
+    },
+    icon: {
+      color: theme.foreground
+    },
+    content: {
+      marginTop: 6
+    }
+  })
+}

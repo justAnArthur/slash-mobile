@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
 import type React from "react"
-import { Image, StyleSheet } from "react-native"
+import { Image, StyleSheet, View } from "react-native"
 
 interface AvatarProps {
   avatar: string | null // Avatar can be a string (URL) or null
@@ -10,7 +10,7 @@ interface AvatarProps {
 
 export const Avatar: React.FC<AvatarProps> = ({ avatar, username }) => {
   return (
-    <ThemedView style={styles.avatarContainer}>
+    <View style={styles.avatarContainer}>
       {avatar ? (
         <Image source={{ uri: avatar }} style={styles.avatar} />
       ) : (
@@ -18,14 +18,12 @@ export const Avatar: React.FC<AvatarProps> = ({ avatar, username }) => {
           <ThemedText>{username.charAt(0).toUpperCase()}</ThemedText>
         </ThemedView>
       )}
-    </ThemedView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  avatarContainer: {
-    marginRight: 15
-  },
+  avatarContainer: {},
   avatar: {
     width: 40,
     height: 40,
@@ -35,7 +33,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#ccc", // Placeholder background color
+    backgroundColor: "#ccc",
     justifyContent: "center",
     alignItems: "center"
   }

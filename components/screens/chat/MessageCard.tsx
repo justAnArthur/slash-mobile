@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ui/ThemedText"
-import { ThemedView } from "@/components/ui/ThemedView"
+import { useTheme } from "@/lib/a11y/ThemeContext"
 import type React from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { Avatar } from "../common/Avatar"
 
 interface MessageCardProps {
@@ -19,6 +19,8 @@ export const MessageCard: React.FC<MessageCardProps> = ({
   name,
   image
 }) => {
+  const styles = useStyles()
+
   const formatDate = (date: string) =>
     new Date(date).toLocaleTimeString([], {
       hour: "2-digit",
@@ -26,46 +28,50 @@ export const MessageCard: React.FC<MessageCardProps> = ({
     })
 
   return (
-    <ThemedView
+    <View
       style={[styles.container, isMe ? styles.myMessage : styles.otherMessage]}
     >
       {isMe && <Avatar avatar={image} username={name} />}
-      <ThemedView style={styles.messageContent}>
-        <ThemedView style={styles.header}>
+      <View style={styles.messageContent}>
+        <View style={styles.header}>
           <ThemedText type="subtitle">{isMe ? "Me" : name}</ThemedText>
           <ThemedText type="extraSmall">{formatDate(time)}</ThemedText>
-        </ThemedView>
+        </View>
         <ThemedText type="small">{message}</ThemedText>
-      </ThemedView>
+      </View>
       {!isMe && <Avatar avatar={image} username={name} />}
-    </ThemedView>
+    </View>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 10,
-    marginVertical: 4,
-    borderRadius: 12,
-    width: "100%"
-  },
-  myMessage: {
-    alignSelf: "flex-end",
-    flexDirection: "row-reverse"
-  },
-  otherMessage: {
-    alignSelf: "flex-start"
-  },
-  messageContent: {
-    flex: 1,
-    maxWidth: "80%",
-    padding: 8
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4
-  }
-})
+function useStyles() {
+  const { theme } = useTheme()
+
+  return StyleSheet.create({
+    container: {
+      backgroundColor: theme.card,
+      flexDirection: "row",
+      gap: 12,
+      alignItems: "flex-start",
+      padding: 10,
+      borderRadius: 12,
+      width: "100%",
+      paddingHorizontal: 16
+    },
+    myMessage: {
+      alignSelf: "flex-end",
+      flexDirection: "row-reverse"
+    },
+    otherMessage: {
+      alignSelf: "flex-start"
+    },
+    messageContent: {
+      flex: 1
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 4
+    }
+  })
+}

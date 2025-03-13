@@ -12,46 +12,43 @@ interface ButtonProps extends TouchableOpacityProps {
 }
 
 export const ThemedButton = ({ title, style, ...props }: ButtonProps) => {
-  const { currentThemeMode } = useTheme()
-  const isDarkMode = currentThemeMode === "dark"
+  const styles = useStyles()
 
   return (
     <TouchableOpacity
       {...props}
-      style={[styles.button, isDarkMode && styles.buttonDark, style]}
+      style={[styles.button, style]}
       activeOpacity={0.7}
     >
-      <Text style={[styles.text, isDarkMode && styles.textDark]}>{title}</Text>
+      <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
   )
 }
 
-const styles = StyleSheet.create({
-  button: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 32,
-    backgroundColor: "rgba(40,40,40,.7)",
-    boxShadow: "inset 2px 4px 16px 0 hsla(0,0%,97%,.06)",
-    backdropFilter: "blur(50px)",
-    fontSize: 14,
-    // lineHeight: 1.4,
-    fontWeight: "600",
-    color: "hsla(0,0%,97%,.7)"
-    // transition: "background .2s, color .2s"
-  },
-  buttonDark: {
-    backgroundColor: "rgba(40,40,40,.7)"
-  },
-  text: {
-    color: "hsla(0,0%,97%,.7)"
-  },
-  textDark: {
-    color: "hsla(0,0%,97%,.7)"
-  }
-})
+function useStyles() {
+  const { theme, isDarkMode } = useTheme()
 
-export const buttonStyles = styles
+  return StyleSheet.create({
+    button: {
+      backgroundColor: theme.primary,
+      color: theme.primaryForeground,
+      boxShadow: isDarkMode
+        ? "inset 2px 4px 16px 0 hsla(0,0%,97%,.06)"
+        : "0 24px 24px -16px rgba(5,5,5,.09),0 6px 13px 0 rgba(5,5,5,.1),0 6px 4px -4px rgba(5,5,5,.1),0 5px 1.5px -4px rgba(5,5,5,.25)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+      borderRadius: 32,
+      backdropFilter: "blur(50px)",
+      fontSize: 14,
+      fontWeight: "600"
+    },
+    text: {
+      color: theme.primaryForeground
+    }
+  })
+}
+
+export const useButtonStyles = useStyles

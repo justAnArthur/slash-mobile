@@ -19,6 +19,7 @@ const ThemeContext = createContext<{
   setCurrentThemeMode: (theme: AvailableThemeMode) => void
   theme: (typeof Themes)[AvailableThemeMode]
 
+  isDarkMode: boolean
   isHighContrast: boolean
   setHighContrast: (isHighContrast: boolean) => void
   // @ts-ignore
@@ -50,13 +51,14 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setItem("contrast", isHighContrast.toString())
   }
 
-  const theme = Themes[currentThemeMode]
+  const theme = !isHighContrast ? Themes[currentThemeMode] : Themes.contrast
 
   return (
     <ThemeContext.Provider
       value={{
         currentThemeMode,
         setCurrentThemeMode: handleSetCurrentThemeMode,
+        isDarkMode: currentThemeMode === "dark",
         isHighContrast,
         setHighContrast: handleSetHighContrast,
         theme
