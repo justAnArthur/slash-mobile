@@ -91,6 +91,7 @@ export const UploadForm = <
 
   const [type, setType] = useState<Type | null>(null)
   const [data, setData] = useState<DataType | null>(null)
+  const [metadata, setMetadata] = useState<any>(null)
 
   async function handleImagePick() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -99,8 +100,11 @@ export const UploadForm = <
     })
 
     if (!result.canceled && result.assets.length > 0) {
+      const asset = result.assets[0]
+
       setType(UploadMessageType.IMAGE_GALLERY as Type)
-      setData(result.assets[0] as DataType)
+      setMetadata(asset)
+      setData(asset)
     } else {
       alert("You did not select any image.")
     }
@@ -114,7 +118,8 @@ export const UploadForm = <
 
     if (!result.canceled && result.assets.length > 0) {
       setType(UploadMessageType.IMAGE_CAMERA as Type)
-      setData(result.assets[0] as DataType)
+      setMetadata(result.assets[0])
+      setData(result.assets[0].file as DataType)
     } else {
       alert("You did not take any photo.")
     }
@@ -130,9 +135,14 @@ export const UploadForm = <
       return
     }
 
-    const currentLocation = await Location.getCurrentPositionAsync()
-    setType(UploadMessageType.LOCATION as Type)
-    setData(currentLocation.coords as DataType)
+    try {
+      const currentLocation = await Location.getCurrentPositionAsync()
+      setType(UploadMessageType.LOCATION as Type)
+      setData(currentLocation.coords as DataType)
+    } catch (error) {
+      console.error(error)
+      alert("An error occurred while fetching location.")
+    }
   }
 
   function handleOnSubmit() {
@@ -142,6 +152,8 @@ export const UploadForm = <
 
     onSubmit(type, data)
   }
+
+  console.log({ data, metadata, type })
 
   return (
     <ThemedView style={styles.uploadModal}>
@@ -178,11 +190,10 @@ export const UploadForm = <
             UploadMessageType.IMAGE_CAMERA as Type,
             UploadMessageType.IMAGE_GALLERY as Type
           ].includes(type) &&
-            data &&
-            "uri" in data &&
-            data.uri && (
+            !!data &&
+            metadata && (
               <Image
-                source={data.uri}
+                source={{ uri: metadata.uri }}
                 style={{
                   width: "100%",
                   aspectRatio: 1,

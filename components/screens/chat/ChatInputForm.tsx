@@ -6,7 +6,6 @@ import { ThemedView } from "@/components/ui/ThemedView"
 import { useTheme } from "@/lib/a11y/ThemeContext"
 import { useI18nT } from "@/lib/i18n/Context"
 import Feather from "@expo/vector-icons/Feather"
-import type { ImagePickerAsset } from "expo-image-picker/src/ImagePicker.types"
 import type { LocationObjectCoords } from "expo-location"
 import { useState } from "react"
 import { Pressable, StyleSheet, TextInput } from "react-native"
@@ -20,14 +19,14 @@ export type MessageTypeT = (typeof MessageType)[keyof typeof MessageType]
 
 export type MessageTypeDataTypes = {
   [MessageType.TEXT]: string
-  [MessageType.IMAGE_GALLERY]: ImagePickerAsset
-  [MessageType.IMAGE_CAMERA]: ImagePickerAsset
+  [MessageType.IMAGE_GALLERY]: File
+  [MessageType.IMAGE_CAMERA]: File
   [MessageType.LOCATION]: LocationObjectCoords
 }
 
 export type Message<T extends MessageTypeT> = {
   type: T
-  data: MessageTypeDataTypes[T] | null
+  data: MessageTypeDataTypes[T]
 }
 
 type ChatInputFormProps = {
@@ -103,7 +102,7 @@ function useStyles() {
       padding: 18
     },
     inputPlaceholder: {
-      color: theme.muted
+      color: `${theme.primaryForeground} / 10`
     }
   })
 }

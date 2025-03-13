@@ -28,8 +28,8 @@ export const useBackend: useBackend = (
     setLoading(true)
     promiseDataFunction()
       .then((res) => {
-        // @ts-ignore
-        if (options.transform) setData(options.transform(res, data))
+        console.log(options)
+        if (options.transform) setData(options.transform(res, { prev: data }))
         else setData(res)
 
         setLoading(false)

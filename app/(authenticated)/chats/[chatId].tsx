@@ -1,11 +1,17 @@
-import { ChatInputForm } from "@/components/screens/chat/ChatInputForm"
+import {
+  ChatInputForm,
+  type MessageTypeDataTypes,
+  type MessageTypeT
+} from "@/components/screens/chat/ChatInputForm"
 import { MessageCard } from "@/components/screens/chat/MessageCard"
 import { Avatar } from "@/components/screens/common/Avatar"
 import { ThemedLink } from "@/components/ui/ThemedLink"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
 import { useTheme } from "@/lib/a11y/ThemeContext"
+import { authClient } from "@/lib/auth"
 import { backend } from "@/lib/services/backend"
+import { BACKEND_URL } from "@/lib/services/backend/url"
 import { useBackend } from "@/lib/services/backend/use"
 import { AntDesign } from "@expo/vector-icons"
 import type { ChatResponse } from "@slash/backend/src/api/chats/chats.api"
@@ -56,7 +62,7 @@ const ChatScreen = () => {
       }),
     [page],
     {
-      transform: (response: PaginatedMessageResponse, params) => {
+      transform: (response: { data: PaginatedMessageResponse }, params) => {
         setHasMore(response.data?.pagination?.totalPages > page)
         return (params?.prev || []).concat(response.data?.messages || [])
       },
@@ -64,21 +70,71 @@ const ChatScreen = () => {
     }
   )
 
-  async function sendMessage({ type, data }: { type: string; data: string }) {
-    if (["TEXT", "LOCATION"].includes(type)) {
-      // @ts-ignore
-      await backend.messages[chatId].post({
-        content: data,
-        type
+  async function sendMessage<T extends MessageTypeT>({
+    type,
+    data
+  }: { type: MessageTypeT; data: MessageTypeDataTypes[T] }) {
+    let handledUploadType = "TEXT"
+    const content = data as any
+
+    const formData = new FormData()
+
+    switch (type) {
+      case "TEXT":
+        formData.append("content", content)
+        handledUploadType = "TEXT"
+        break
+
+      case "IMAGE_GALLERY":
+      case "IMAGE_CAMERA":
+        const image = data
+
+        if (image.uri.startsWith("data:") || image.uri.startsWith("blob:")) {
+          const blob = await fetch(image.uri).then((res) => res.blob())
+          formData.append("content", blob, `photo.${blob.type.split("/")[1]}`)
+        } else {
+          // Android / iOS handling
+          const uriParts = image.uri.split(".")
+          const fileType = uriParts[uriParts.length - 1]
+
+          formData.append("content", {
+            uri: image.uri,
+            name: `photo.${fileType}`,
+            type: `image/${fileType}`
+          })
+        }
+
+        handledUploadType = "IMAGE"
+        break
+      case "LOCATION":
+        formData.append("content", JSON.stringify(data))
+        handledUploadType = "LOCATION"
+        break
+    }
+
+    formData.append("type", handledUploadType)
+
+    try {
+      console.log({ formData })
+
+      const response = await fetch(`${BACKEND_URL!}/messages/${chatId}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Cookie: authClient.getCookie()
+        },
+        credentials: "include"
       })
+
+      console.log({ response })
+    } catch (error) {
+      console.error(error)
     }
   }
 
   if (chatLoading || messagesLoading) {
     return <ThemedText>Loading...</ThemedText>
   }
-
-  console.log(chatError, messagesError, chat, messages)
 
   if (chatError || messagesError || !chat || !messages) {
     return <ThemedText>Error</ThemedText>
@@ -126,18 +182,11 @@ const ChatScreen = () => {
         <FlatList
           data={messages}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <MessageCard
-              message={item.content || ""}
-              time={item.createdAt}
-              isMe={Boolean(item.isMe)}
-              name={item.name}
-              image={item.image}
-            />
-          )}
+          renderItem={({ item }) => <MessageCard {...item} />}
           inverted
           onEndReached={() => setPage((prev) => prev + 1)}
           onEndReachedThreshold={0.2}
+          contentContainerStyle={{ gap: 8 }}
         />
       </ThemedView>
 

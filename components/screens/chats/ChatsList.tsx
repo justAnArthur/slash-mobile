@@ -39,13 +39,15 @@ export function ChatsList({
       }),
     [query, page],
     {
-      transform: (data) => {
+      transform: (data, { prev }) => {
         setHasMore(data?.length === pageSize)
-        return data?.data
+        return (prev || []).concat(data?.data)
       },
       haveTo: hasMore
     }
   )
+
+  console.log({ chats })
 
   function openChat(userId: string) {
     // @ts-ignore
@@ -63,6 +65,7 @@ export function ChatsList({
               <ChatCard
                 avatar={item.image}
                 username={item.name}
+                // @ts-ignore todo item.lastMessage
                 lastMessage={item.lastMessage}
                 onPress={() => openChat(item.id)}
               />
