@@ -47,12 +47,12 @@ export function ChatsList({
     }
   )
 
-  console.log({ chats })
-
   function openChat(userId: string) {
     // @ts-ignore
     router.push(`/chats/${userId}`)
   }
+
+  console.log("chats", chats)
 
   return (
     <ThemedView style={styles.container}>
@@ -60,7 +60,7 @@ export function ChatsList({
         chats?.length && chats.length > 0 ? (
           <FlatList
             data={chats}
-            keyExtractor={(user: any) => user.id}
+            keyExtractor={(chat: any) => chat.id}
             renderItem={({ item }) => (
               <ChatCard
                 avatar={item.image}

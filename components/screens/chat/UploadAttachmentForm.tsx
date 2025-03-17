@@ -103,7 +103,7 @@ export const UploadForm = <
       const asset = result.assets[0]
 
       setType(UploadMessageType.IMAGE_GALLERY as Type)
-      setMetadata(asset)
+      setMetadata(asset) // @ts-ignore
       setData(asset)
     } else {
       alert("You did not select any image.")
@@ -117,9 +117,12 @@ export const UploadForm = <
     })
 
     if (!result.canceled && result.assets.length > 0) {
+      const asset = result.assets[0]
+
       setType(UploadMessageType.IMAGE_CAMERA as Type)
-      setMetadata(result.assets[0])
-      setData(result.assets[0].file as DataType)
+      setMetadata(asset)
+      // @ts-ignore
+      setData(asset)
     } else {
       alert("You did not take any photo.")
     }
@@ -152,8 +155,6 @@ export const UploadForm = <
 
     onSubmit(type, data)
   }
-
-  console.log({ data, metadata, type })
 
   return (
     <ThemedView style={styles.uploadModal}>

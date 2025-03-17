@@ -10,6 +10,10 @@ const en = {
     themes: {
       light: "Light",
       dark: "Dark"
+    },
+    network: {
+      offline: "You are offline",
+      online: "You are online"
     }
   },
   screens: {

@@ -12,6 +12,10 @@ const sk: Translations = {
     themes: {
       light: "Svetlý",
       dark: "Tmavý"
+    },
+    network: {
+      offline: "Ste offline",
+      online: "Ste online"
     }
   },
   screens: {

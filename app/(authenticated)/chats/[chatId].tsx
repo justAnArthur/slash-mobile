@@ -19,6 +19,7 @@ import type {
   MessageResponse,
   PaginatedMessageResponse
 } from "@slash/backend/src/api/messages/messages.api"
+import type { ImagePickerAsset } from "expo-image-picker"
 import { useLocalSearchParams } from "expo-router"
 import React, { useState } from "react"
 import { FlatList, StyleSheet } from "react-native"
@@ -87,7 +88,8 @@ const ChatScreen = () => {
 
       case "IMAGE_GALLERY":
       case "IMAGE_CAMERA":
-        const image = data
+        // biome-ignore lint/correctness/noSwitchDeclarations: <explanation>
+        const image = data as ImagePickerAsset
 
         if (image.uri.startsWith("data:") || image.uri.startsWith("blob:")) {
           const blob = await fetch(image.uri).then((res) => res.blob())
@@ -97,6 +99,7 @@ const ChatScreen = () => {
           const uriParts = image.uri.split(".")
           const fileType = uriParts[uriParts.length - 1]
 
+          // @ts-ignore
           formData.append("content", {
             uri: image.uri,
             name: `photo.${fileType}`,
@@ -115,8 +118,6 @@ const ChatScreen = () => {
     formData.append("type", handledUploadType)
 
     try {
-      console.log({ formData })
-
       const response = await fetch(`${BACKEND_URL!}/messages/${chatId}`, {
         method: "POST",
         body: formData,

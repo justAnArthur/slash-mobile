@@ -1,7 +1,6 @@
 import * as SecureStore from "expo-secure-store"
 
 export function getItem(key: string): string | null {
-  console.log("getItem SecureStore")
   return SecureStore.getItem(key)
 }
 

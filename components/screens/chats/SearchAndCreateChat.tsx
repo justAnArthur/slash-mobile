@@ -141,7 +141,11 @@ function FindUserForm({ closeModal }: FindUserFormProps) {
 
         <View style={{ flexDirection: "row", gap: 8 }}>
           <TouchableOpacity
-            style={[buttonStyles.button, styles.handleButton]}
+            style={[
+              buttonStyles.button,
+              styles.handleButton,
+              { paddingHorizontal: 0, paddingVertical: 0 }
+            ]}
             onPress={() => setIsHandle(false)}
           >
             <Octicons
@@ -172,6 +176,7 @@ function FindUserForm({ closeModal }: FindUserFormProps) {
           <TextInput
             style={styles.input}
             placeholder="Search..."
+            placeholderTextColor={styles.inputItem.color}
             value={queryText}
             onChangeText={setQueryText}
           />
@@ -179,7 +184,11 @@ function FindUserForm({ closeModal }: FindUserFormProps) {
 
         {selectedUsers.length > 0 && (
           <TouchableOpacity
-            style={[buttonStyles.button, styles.handleButton]}
+            style={[
+              buttonStyles.button,
+              styles.handleButton,
+              { paddingHorizontal: 0, paddingVertical: 0 }
+            ]}
             onPress={() => setIsHandle(true)}
           >
             <Octicons
