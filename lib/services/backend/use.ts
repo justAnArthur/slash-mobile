@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useNetworkState } from "expo-network"
-import { type DependencyList, useEffect, useState } from "react"
+import { type DependencyList, useEffect, useMemo, useState } from "react"
 
 type useBackend = <T>(
   promiseDataFunction: () => Promise<any>,
@@ -25,38 +25,42 @@ export const useBackend: useBackend = (
   const [data, setData] = useState(null)
 
   const networkState = useNetworkState()
-  const cacheKey = String(hash(promiseDataFunction.toString()))
+  const cacheKey = useMemo(
+    () => String(hash(promiseDataFunction.toString())),
+    deps
+  )
 
   async function fetchFromNetwork() {
     const res = await promiseDataFunction()
 
-    console.log("fetchFromNetwork res", res)
+    await AsyncStorage.setItem(cacheKey, JSON.stringify(res))
 
     const _data = options.transform
       ? options.transform(res, { prev: data })
       : res
 
-    console.log("fetchFromNetwork _data", _data)
-
-    await AsyncStorage.setItem(cacheKey, JSON.stringify(_data))
     setData(_data)
   }
 
   async function fetchFromCache() {
     const res = await AsyncStorage.getItem(cacheKey)
-    const _data = res && JSON.parse(res)
-    setData(_data && _data)
+
+    const parsed = res && JSON.parse(res)
+    const _data = options.transform
+      ? options.transform(parsed, { prev: data })
+      : parsed
+
+    setData(_data)
   }
+
+  const networkDependency = networkState?.isInternetReachable ?? true
 
   useEffect(() => {
     if (options.haveTo !== undefined && !options.haveTo) return
 
     setLoading(true)
 
-    const shouldFetchFromNetwork =
-      networkState?.isConnected === undefined || networkState.isConnected
-
-    console.log("shouldFetchFromNetwork", shouldFetchFromNetwork)
+    const shouldFetchFromNetwork = networkState?.isInternetReachable ?? true
     ;(shouldFetchFromNetwork ? fetchFromNetwork() : fetchFromCache())
       .catch((err) => {
         console.warn(err)
@@ -65,14 +69,18 @@ export const useBackend: useBackend = (
       .finally(() => {
         setLoading(false)
       })
-  }, deps)
+  }, [...deps, networkDependency])
 
   return { loading, error, data }
 }
 
 function hash(string: string) {
-  return string.split("").reduce((a, b) => {
-    const _a = (a << 5) - a + b.charCodeAt(0)
-    return a & _a
-  }, 0)
+  return string
+    .replace(/\s+/g, "")
+    .trim()
+    .split("")
+    .reduce((a, b) => {
+      const _a = (a << 5) - a + b.charCodeAt(0)
+      return _a & _a
+    }, 0)
 }

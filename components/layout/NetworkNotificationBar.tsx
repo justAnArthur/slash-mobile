@@ -18,7 +18,7 @@ export function NetworkNotificationBar() {
       setIsOpen(true)
 
       const timeout = setTimeout(() => setIsOpen(false), 2000)
-      // return () => clearTimeout(timeout)
+      return () => clearTimeout(timeout)
     }
 
     previousNetworkState.current = networkState
@@ -28,14 +28,14 @@ export function NetworkNotificationBar() {
 
   const styles = useStyles()
 
-  // if (isOpen)
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>
-        {networkState.isConnected ? t("online") : t("offline")}
-      </Text>
-    </View>
-  )
+  if (isOpen)
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>
+          {networkState.isInternetReachable ? t("online") : t("offline")}
+        </Text>
+      </View>
+    )
 }
 
 function useStyles() {

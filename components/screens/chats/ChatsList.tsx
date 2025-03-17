@@ -40,6 +40,7 @@ export function ChatsList({
     [query, page],
     {
       transform: (data, { prev }) => {
+        console.log("setHasMore", data?.length, pageSize)
         setHasMore(data?.length === pageSize)
         return (prev || []).concat(data?.data)
       },
@@ -51,8 +52,6 @@ export function ChatsList({
     // @ts-ignore
     router.push(`/chats/${userId}`)
   }
-
-  console.log("chats", chats)
 
   return (
     <ThemedView style={styles.container}>
