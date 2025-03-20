@@ -12,17 +12,20 @@ import { Image } from "expo-image"
 import React from "react"
 import { StyleSheet, View } from "react-native"
 import { Avatar } from "../common/Avatar"
+import { authClient } from "@/lib/auth"
 
 export const MessageCard = ({
   content,
   createdAt: date,
-  isMe,
   name,
   image,
-  attachments
+  attachments,
+  senderId
 }: MessageResponse) => {
   const styles = useStyles()
 
+  const { data: session } = authClient.useSession()
+  const isMe = session?.user.id === senderId
   const formatDate = (date: string) =>
     new Date(date).toLocaleTimeString([], {
       hour: "2-digit",

@@ -13,6 +13,7 @@ import { authClient } from "@/lib/auth"
 import { backend } from "@/lib/services/backend"
 import { BACKEND_URL } from "@/lib/services/backend/url"
 import { useBackend } from "@/lib/services/backend/use"
+import { useWebSocket } from "@/lib/services/WebSocketProvider"
 import { AntDesign } from "@expo/vector-icons"
 import type { ChatResponse } from "@slash/backend/src/api/chats/chats.api"
 import type {
@@ -30,6 +31,7 @@ const ChatScreen = () => {
   const styles = useStyles()
 
   const { chatId } = useLocalSearchParams()
+  const { messages: wsMessages, setMessages } = useWebSocket()
 
   const {
     data: chat,
@@ -49,7 +51,7 @@ const ChatScreen = () => {
   const [page, setPage] = useState(1)
 
   const {
-    data: messages = [],
+    data: backendMessages = [],
     loading: messagesLoading,
     error: messagesError
   } = useBackend<MessageResponse[]>(
@@ -69,6 +71,12 @@ const ChatScreen = () => {
       },
       haveTo: hasMore
     }
+  )
+  const messages = [
+    ...(wsMessages[chatId] || []),
+    ...(backendMessages || [])
+  ].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )
 
   async function sendMessage<T extends MessageTypeT>({
