@@ -31,7 +31,7 @@ const ChatScreen = () => {
   const styles = useStyles()
 
   const { chatId } = useLocalSearchParams()
-  const { messages: wsMessages, setMessages } = useWebSocket()
+  const { messages: wsMessages } = useWebSocket()
 
   const {
     data: chat,
@@ -72,12 +72,23 @@ const ChatScreen = () => {
       haveTo: hasMore
     }
   )
+  const seenMessageIds = new Set()
+  // @ts-ignore
   const messages = [
-    ...(wsMessages[chatId] || []),
+    ...(wsMessages[chatId as string] || []),
     ...(backendMessages || [])
-  ].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )
+  ]
+    .filter((message) => {
+      if (seenMessageIds.has(message.id)) {
+        return false
+      }
+      seenMessageIds.add(message.id)
+      return true
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
 
   async function sendMessage<T extends MessageTypeT>({
     type,
