@@ -1,36 +1,36 @@
 import { Avatar } from "@/components/screens/common/Avatar"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { useTheme } from "@/lib/a11y/ThemeContext"
+import { authClient } from "@/lib/auth"
 import type React from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
+import type { MessageResponse } from "@slash/backend/src/api/messages/messages.api"
 
-export interface LastMessage {
-  content: string | null
-  type: "TEXT" | "IMAGE" | "LOCATION"
-  createdAt: Date
-  isMe: boolean
-}
 interface ChatCardProps {
-  avatar: string | null
+  type: "group" | "private"
   username: string
-  lastMessage: LastMessage | null
+  lastMessage: MessageResponse | null
   onPress: () => void
 }
 
 export const ChatCard: React.FC<ChatCardProps> = ({
-  avatar,
+  type,
   username,
   lastMessage,
   onPress
 }) => {
   const styles = useStyles()
 
+  const { data: session } = authClient.useSession()
+  const isMe = lastMessage && session?.user.id === lastMessage.senderId
   let truncatedLastMessage = lastMessage && getTruncatedLastMessage(lastMessage)
-  if (lastMessage?.isMe) truncatedLastMessage = `Me: ${truncatedLastMessage}`
+  if (type === "group" && !isMe) {
+    truncatedLastMessage = `${lastMessage?.name}: ${truncatedLastMessage}`
+  } else if (isMe) truncatedLastMessage = `Me: ${truncatedLastMessage}`
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Avatar username={username} avatar={avatar} />
+      <Avatar username={username} avatar={lastMessage?.image} />
       <View style={styles.infoContainer}>
         <ThemedText style={styles.username}>{username}</ThemedText>
         <ThemedText style={styles.lastMessage}>
@@ -82,7 +82,7 @@ function useStyles() {
   })
 }
 
-function getTruncatedLastMessage(lastMessage: LastMessage | null): string {
+function getTruncatedLastMessage(lastMessage: MessageResponse | null): string {
   if (!lastMessage) return "No messages yet"
 
   if (lastMessage.type !== "TEXT") {

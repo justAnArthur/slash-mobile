@@ -3,9 +3,10 @@ import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator
 import { ThemedView } from "@/components/ui/ThemedView"
 import { backend } from "@/lib/services/backend"
 import { useBackend } from "@/lib/services/backend/use"
-import type { ChatResponse } from "@slash/backend/src/api/chats/chats.api"
+import { useWebSocket } from "@/lib/services/WebSocketProvider"
+import type { ChatListResponse } from "@slash/backend/src/api/chats/chats.api"
 import { useRouter } from "expo-router"
-import { type ReactNode, useState } from "react"
+import { type ReactNode, useEffect, useState } from "react"
 import { FlatList, StyleSheet } from "react-native"
 
 type ChatsListProps = {
@@ -21,14 +22,15 @@ export function ChatsList({
 }: ChatsListProps) {
   const router = useRouter()
 
+  const { chats, setChats } = useWebSocket()
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
 
   const {
-    data: chats = [],
+    data: backendChats = [],
     loading,
     error
-  } = useBackend<ChatResponse[]>(
+  } = useBackend<ChatListResponse[]>(
     () =>
       backend.chats.get({
         query: {
@@ -47,7 +49,27 @@ export function ChatsList({
       haveTo: hasMore
     }
   )
+  useEffect(() => {
+    if (backendChats && backendChats.length > 0) {
+      setChats((prevChats) => {
+        const chatMap = new Map(prevChats.map((chat) => [chat.id, chat]))
 
+        for (const chat of backendChats) {
+          chatMap.set(chat.id, chat)
+        }
+
+        return Array.from(chatMap.values()).sort((a, b) => {
+          const aDate = a.lastMessage?.createdAt
+            ? new Date(a.lastMessage.createdAt).getTime()
+            : 0
+          const bDate = b.lastMessage?.createdAt
+            ? new Date(b.lastMessage.createdAt).getTime()
+            : 0
+          return bDate - aDate
+        })
+      })
+    }
+  }, [backendChats, setChats])
   function openChat(userId: string) {
     // @ts-ignore
     router.push(`/chats/${userId}`)
@@ -59,12 +81,11 @@ export function ChatsList({
         chats?.length && chats.length > 0 ? (
           <FlatList
             data={chats}
-            keyExtractor={(chat: any) => chat.id}
+            keyExtractor={(chat: ChatListResponse) => chat.id}
             renderItem={({ item }) => (
               <ChatCard
-                avatar={item.image}
+                type={item.type as "group" | "private"}
                 username={item.name}
-                // @ts-ignore todo item.lastMessage
                 lastMessage={item.lastMessage}
                 onPress={() => openChat(item.id)}
               />
