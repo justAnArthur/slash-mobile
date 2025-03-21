@@ -11,13 +11,15 @@ interface ChatCardProps {
   username: string
   lastMessage: MessageResponse | null
   onPress: () => void
+  onDelete: () => void
 }
 
 export const ChatCard: React.FC<ChatCardProps> = ({
   type,
   username,
   lastMessage,
-  onPress
+  onPress,
+  onDelete
 }) => {
   const styles = useStyles()
 
@@ -25,7 +27,7 @@ export const ChatCard: React.FC<ChatCardProps> = ({
   const isMe = lastMessage && session?.user.id === lastMessage.senderId
   let truncatedLastMessage = lastMessage && getTruncatedLastMessage(lastMessage)
   if (type === "group" && !isMe) {
-    truncatedLastMessage = `${lastMessage?.name}: ${truncatedLastMessage}`
+    truncatedLastMessage = `${lastMessage?.name || "Info"}: ${truncatedLastMessage}`
   } else if (isMe) truncatedLastMessage = `Me: ${truncatedLastMessage}`
 
   return (
@@ -37,6 +39,9 @@ export const ChatCard: React.FC<ChatCardProps> = ({
           {truncatedLastMessage}
         </ThemedText>
       </View>
+      <TouchableOpacity onPress={onDelete}>
+        <ThemedText>Delete</ThemedText>
+      </TouchableOpacity>
     </TouchableOpacity>
   )
 }
@@ -83,7 +88,7 @@ function useStyles() {
 }
 
 function getTruncatedLastMessage(lastMessage: MessageResponse | null): string {
-  if (!lastMessage) return "No messages yet"
+  if (!lastMessage || !lastMessage.content) return "No messages yet"
 
   if (lastMessage.type !== "TEXT") {
     return `${lastMessage.type.charAt(0)}${lastMessage.type.slice(1).toLowerCase()}`

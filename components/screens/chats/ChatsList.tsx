@@ -7,7 +7,8 @@ import { useWebSocket } from "@/lib/services/WebSocketProvider"
 import type { ChatListResponse } from "@slash/backend/src/api/chats/chats.api"
 import { useRouter } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
-import { FlatList, StyleSheet } from "react-native"
+import { Alert, FlatList, StyleSheet } from "react-native"
+import ConfirmationModal from "../common/ConfirmationModal"
 
 type ChatsListProps = {
   pageSize?: number
@@ -25,7 +26,8 @@ export function ChatsList({
   const { chats, setChats } = useWebSocket()
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
-
+  const [isModalVisible, setModalVisible] = useState(false)
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null)
   const {
     data: backendChats = [],
     loading,
@@ -74,9 +76,31 @@ export function ChatsList({
     // @ts-ignore
     router.push(`/chats/${userId}`)
   }
+  const deleteChat = (chatId: string) => {
+    setChatToDelete(chatId)
+    setModalVisible(true)
+  }
 
+  const confirmDelete = async () => {
+    if (chatToDelete) {
+      await backend.chats[`${chatToDelete}`].delete()
+      setChats((prev) => prev.filter((chat) => chat.id !== chatToDelete))
+      setModalVisible(false)
+      setChatToDelete(null)
+    }
+  }
+
+  const cancelDelete = () => {
+    setModalVisible(false)
+    setChatToDelete(null)
+  }
   return (
     <ThemedView style={styles.container}>
+      <ConfirmationModal
+        visible={isModalVisible}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
       {!loading ? (
         chats?.length && chats.length > 0 ? (
           <FlatList
@@ -88,6 +112,7 @@ export function ChatsList({
                 username={item.name}
                 lastMessage={item.lastMessage}
                 onPress={() => openChat(item.id)}
+                onDelete={() => deleteChat(item.id)}
               />
             )}
             onEndReached={() => setPage((prev) => prev + 1)}
