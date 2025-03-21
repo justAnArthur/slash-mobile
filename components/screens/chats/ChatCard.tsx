@@ -11,7 +11,7 @@ interface ChatCardProps {
   username: string
   lastMessage: MessageResponse | null
   onPress: () => void
-  onDelete: () => void
+  onDelete: (() => void) | null
 }
 
 export const ChatCard: React.FC<ChatCardProps> = ({
@@ -39,9 +39,11 @@ export const ChatCard: React.FC<ChatCardProps> = ({
           {truncatedLastMessage}
         </ThemedText>
       </View>
-      <TouchableOpacity onPress={onDelete}>
-        <ThemedText>Delete</ThemedText>
-      </TouchableOpacity>
+      {onDelete && (
+        <TouchableOpacity onPress={onDelete}>
+          <ThemedText>Delete</ThemedText>
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   )
 }

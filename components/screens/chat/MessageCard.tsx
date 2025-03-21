@@ -13,6 +13,7 @@ import React from "react"
 import { StyleSheet, View } from "react-native"
 import { Avatar } from "../common/Avatar"
 import { authClient } from "@/lib/auth"
+import { ThemedView } from "@/components/ui/ThemedView"
 
 export const MessageCard = ({
   content,
@@ -32,6 +33,18 @@ export const MessageCard = ({
       minute: "2-digit"
     })
 
+  if (senderId === "SYSTEM") {
+    return (
+      <ThemedView style={styles.systemMessage}>
+        <ThemedText type="small" style={styles.systemMessageText}>
+          {content}
+        </ThemedText>
+        <ThemedText type="extraSmall" style={styles.systemMessageDate}>
+          {formatDate(date)}
+        </ThemedText>
+      </ThemedView>
+    )
+  }
   return (
     <View
       style={[
@@ -126,6 +139,19 @@ function useStyles() {
       width: "100%",
       aspectRatio: 1
     },
-    location: {}
+    location: {},
+    systemMessage: {
+      padding: 10,
+      borderRadius: 12,
+      marginBottom: 8,
+      alignItems: "center",
+      width: "100%"
+    },
+    systemMessageText: {
+      fontWeight: "bold"
+    },
+    systemMessageDate: {
+      fontSize: 12
+    }
   })
 }
