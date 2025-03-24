@@ -8,6 +8,7 @@ import type React from "react"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import { useBackend } from "./backend/use"
 import { backend } from "./backend"
+import { WS_URL } from "./backend/url"
 
 type WebSocketContextType = {
   messages: Record<string, MessageResponse[]>
@@ -51,7 +52,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!session?.user.id) return
 
-    const wsUrl = `ws://localhost:3000/ws?id=${session.user.id}`
+    const wsUrl = `${WS_URL}/ws?id=${session.user.id}`
     ws.current = new WebSocket(wsUrl)
 
     ws.current.onopen = () => {
