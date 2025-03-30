@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     flexDirection: "column",
+    alignItems: "center",
     justifyContent: "center",
     gap: 18
   },

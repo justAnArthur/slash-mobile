@@ -4,6 +4,7 @@ import { StyleSheet, TextInput, type TextInputProps } from "react-native"
 
 export const ThemedInput = ({
   multiline,
+  numberOfLines,
   style,
   ...props
 }: PropsWithoutRef<TextInputProps>) => {
@@ -16,7 +17,7 @@ export const ThemedInput = ({
       style={multiline ? [styles.textarea, style] : [styles.input, style]}
       placeholderTextColor={theme.mutedForeground}
       multiline={multiline}
-      numberOfLines={multiline ? 4 : 1}
+      numberOfLines={multiline ? numberOfLines : 1}
     />
   )
 }

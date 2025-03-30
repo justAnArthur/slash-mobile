@@ -24,7 +24,7 @@ export default function SignUpScreen() {
 
     if (res.error) return
 
-    router.push("/")
+    router.push("/sign-up/additional-info")
   }
 
   return (

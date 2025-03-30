@@ -14,6 +14,16 @@ const en = {
     network: {
       offline: "You are offline",
       online: "You are online"
+    },
+    avatar: {
+      changeAvatar: "Change Avatar",
+      gallery: "Gallery",
+      camera: "Camera",
+      cancel: "Cancel",
+      adjustAvatar: "Adjust Avatar",
+      pinchAndDrag: "Pinch to zoom and drag to position",
+      confirm: "Confirm",
+      processing: "Processing image..."
     }
   },
   screens: {
