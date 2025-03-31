@@ -239,7 +239,7 @@ export const UploadForm = <
 }
 
 function useStyles() {
-  const { theme, isDarkMode } = useTheme()
+  const { theme } = useTheme()
 
   return StyleSheet.create({
     modalContainer: {

@@ -4,10 +4,12 @@ const en = {
   common: {
     error: "Error",
     locales: {
+      current: "Current locale is: ",
       en: "English",
       sk: "Slovak"
     },
     themes: {
+      current: "Current theme is: ",
       light: "Light",
       dark: "Dark"
     },

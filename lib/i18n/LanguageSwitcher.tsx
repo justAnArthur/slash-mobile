@@ -9,7 +9,8 @@ export const LanguageSwitcher = () => {
   return (
     <View style={styles.container}>
       <ThemedText style={styles.header}>
-        Current Locale: {currentLocale}
+        {i18n.t("common.locales.current")}
+        {i18n.t(`common.locales.${currentLocale}`)}
       </ThemedText>
       <View style={styles.buttonContainer}>
         {locales.map((locale) => (

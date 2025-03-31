@@ -6,10 +6,12 @@ const sk: Translations = {
   common: {
     error: "Chyba",
     locales: {
+      current: "Aktuálny jazyk: ",
       en: "Angličtina",
       sk: "Slovenčina"
     },
     themes: {
+      current: "Aktuálna téma: ",
       light: "Svetlý",
       dark: "Tmavý"
     },

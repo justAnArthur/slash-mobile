@@ -11,7 +11,7 @@ import { useRouter } from "expo-router"
 import { useState } from "react"
 import { ScrollView, StyleSheet } from "react-native"
 
-export default function SettingsModal() {
+export default function SettingsScreen() {
   const t = useI18nT("screens.settings")
 
   return (
@@ -52,6 +52,7 @@ function LogOutButton() {
       fetchOptions: {
         onSuccess: () => {
           // setLoading(false)
+          // @ts-ignore
           router.replace("/sign-in")
         },
         onError: () => {
