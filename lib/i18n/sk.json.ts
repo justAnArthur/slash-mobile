@@ -46,6 +46,12 @@ const sk: Translations = {
       settings: "Nastavenia"
     },
     chats: {
+      actions: {
+        delete: "Vymazať",
+        pin: "Pripnúť"
+      },
+      noChats: "Žiadne chaty",
+      noPinnedChats: "Žiadne pripnuté chaty",
       input: {
         placeholder: "Napíšte správu",
         send: "Odoslať"

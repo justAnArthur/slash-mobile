@@ -44,6 +44,12 @@ const en = {
       settings: "Settings"
     },
     chats: {
+      actions: {
+        delete: "Delete",
+        pin: "Toggle Pin"
+      },
+      noChats: "No chats",
+      noPinnedChats: "No pinned chats",
       input: {
         placeholder: "Type a message",
         send: "Send"

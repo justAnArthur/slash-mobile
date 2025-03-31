@@ -1,17 +1,18 @@
-import { Avatar } from "@/components/screens/common/Avatar"
-import { ThemedText } from "@/components/ui/ThemedText"
-import { useTheme } from "@/lib/a11y/ThemeContext"
-import { authClient } from "@/lib/auth"
-import type { MessageResponse } from "@slash/backend/src/api/messages/messages.api"
-import type React from "react"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import {Avatar} from "@/components/screens/common/Avatar"
+import {ThemedText} from "@/components/ui/ThemedText"
+import {useTheme} from "@/lib/a11y/ThemeContext"
+import {authClient} from "@/lib/auth"
+import type {MessageResponse} from "@slash/backend/src/api/messages/messages.api"
+import type React, {ReactNode} from "react"
+import {StyleSheet, TouchableOpacity, View} from "react-native"
 
 interface ChatCardProps {
   type: "group" | "private"
   username: string
-  lastMessage: MessageResponse | null
+  avatar?: any
+  lastMessage?: MessageResponse | null
   onPress: () => void
-  onDelete: (() => void) | null
+  actionsChildren?: ReactNode
 }
 
 export const ChatCard: React.FC<ChatCardProps> = ({
@@ -19,7 +20,8 @@ export const ChatCard: React.FC<ChatCardProps> = ({
   username,
   lastMessage,
   onPress,
-  onDelete
+  actionsChildren,
+  avatar
 }) => {
   const styles = useStyles()
 
@@ -36,18 +38,16 @@ export const ChatCard: React.FC<ChatCardProps> = ({
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Avatar username={username} avatar={lastMessage?.image} />
+      <Avatar username={username} avatar={avatar || lastMessage?.image} />
+
       <View style={styles.infoContainer}>
         <ThemedText style={styles.username}>{username}</ThemedText>
         <ThemedText style={styles.lastMessage}>
           {truncatedLastMessage}
         </ThemedText>
       </View>
-      {onDelete && (
-        <TouchableOpacity onPress={onDelete}>
-          <ThemedText>Delete</ThemedText>
-        </TouchableOpacity>
-      )}
+
+      {actionsChildren}
     </TouchableOpacity>
   )
 }

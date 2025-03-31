@@ -27,10 +27,10 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const ws = useRef<WebSocket | null>(null)
 
+  const [chats, setChats] = useState<ChatListResponse[]>([])
   const [messages, setMessages] = useState<Record<string, MessageResponse[]>>(
     {}
   )
-  const [chats, setChats] = useState<ChatListResponse[]>([])
   const [newChatId, setNewChatId] = useState<string | null>(null)
 
   const { data: newChatData } = useBackend<ChatListResponse>(

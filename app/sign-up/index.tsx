@@ -1,6 +1,6 @@
 import { useSignInStyles } from "@/app/sign-in"
-import { LanguageModalSwitcher } from "@/app/sign-in/language-switcher-modal"
-import { ThemeModalSwitcher } from "@/app/sign-in/theme-switcher-modal"
+import { LanguageModalSwitcher } from "@/app/sign-in/LanguageSwitcherModal"
+import { ThemeModalSwitcher } from "@/app/sign-in/ThemeSwitcherModal"
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedInput } from "@/components/ui/ThemedInput"
 import { ThemedText } from "@/components/ui/ThemedText"
