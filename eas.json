@@ -6,7 +6,10 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://136a-178-253-181-191.ngrok-free.app"
+      }
     },
     "preview": {
       "distribution": "internal",
