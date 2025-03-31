@@ -14,7 +14,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "https://c507-147-175-161-61.ngrok-free.app"
+        "EXPO_PUBLIC_BACKEND_URL": "https://slash-backend.justadomainname.dev"
       }
     },
     "production": {
