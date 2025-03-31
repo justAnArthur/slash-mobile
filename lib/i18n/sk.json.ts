@@ -16,6 +16,27 @@ const sk: Translations = {
     network: {
       offline: "Ste offline",
       online: "Ste online"
+    },
+    avatar: {
+      changeAvatar: "Zmeniť avatar",
+      gallery: "Galéria",
+      camera: "Kamera",
+      cancel: "Zrušiť",
+      adjustAvatar: "Upraviť avatar",
+      pinchAndDrag: "Štipnite pre priblíženie a potiahnite pre umiestnenie",
+      confirm: "Potvrdiť",
+      processing: "Spracovanie obrázka..."
+    },
+    profile: {
+      bioPlaceholder: "Aktualizujte svoj životopis (max. 280 znakov)",
+      saving: "Ukladá sa...",
+      save: "Uložiť",
+      permissionAlert:
+        "Prosím, povoľte prístup ku kamere a galérii na nahratie avataru."
+    },
+    errors: {
+      noUserSession: "Žiadna používateľská relácia",
+      updateProfileFailed: "Nepodarilo sa aktualizovať profil"
     }
   },
   screens: {

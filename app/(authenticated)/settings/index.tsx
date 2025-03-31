@@ -1,4 +1,5 @@
 import { Collapsible } from "@/components/Collapsible"
+import { UpdateUserInfo } from "@/components/screens/common/UpdateUserInfo"
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
@@ -8,26 +9,30 @@ import { useI18nT } from "@/lib/i18n/Context"
 import { LanguageSwitcher } from "@/lib/i18n/LanguageSwitcher"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { StyleSheet } from "react-native"
+import { ScrollView, StyleSheet } from "react-native"
 
 export default function SettingsModal() {
   const t = useI18nT("screens.settings")
 
   return (
     <ThemedView style={styles.content}>
-      <ThemedView style={styles.header}>
-        <ThemedText type="title">{t("title")}</ThemedText>
-      </ThemedView>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ThemedView style={styles.header}>
+          <ThemedText type="title">{t("title")}</ThemedText>
+        </ThemedView>
 
-      <Collapsible title="i18n">
-        <LanguageSwitcher />
-      </Collapsible>
-      <Collapsible title="i11y">
-        <ThemeSwitcher />
-        {/*<ContrastSwitcher />*/}
-      </Collapsible>
-
-      <LogOutButton />
+        <Collapsible title="Profile">
+          <UpdateUserInfo />
+          <LogOutButton />
+        </Collapsible>
+        <Collapsible title="i18n">
+          <LanguageSwitcher />
+        </Collapsible>
+        <Collapsible title="i11y">
+          <ThemeSwitcher />
+          {/*<ContrastSwitcher />*/}
+        </Collapsible>
+      </ScrollView>
     </ThemedView>
   )
 }
@@ -69,15 +74,15 @@ function LogOutButton() {
 
 const styles = StyleSheet.create({
   content: {
-    paddingTop: 12,
-    display: "flex",
-    flexDirection: "column",
-    gap: 18
+    flex: 1
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 20,
+    gap: 16,
+    marginBottom: 50
   },
   header: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12
+    marginBottom: 16
   }
 })

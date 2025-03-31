@@ -24,6 +24,17 @@ const en = {
       pinchAndDrag: "Pinch to zoom and drag to position",
       confirm: "Confirm",
       processing: "Processing image..."
+    },
+    profile: {
+      bioPlaceholder: "Update your bio (280 characters max)",
+      saving: "Saving...",
+      save: "Save",
+      permissionAlert:
+        "Please grant camera and gallery permissions to upload an avatar."
+    },
+    errors: {
+      noUserSession: "No user session",
+      updateProfileFailed: "Failed to update profile"
     }
   },
   screens: {
