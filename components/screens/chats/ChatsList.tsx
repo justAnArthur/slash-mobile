@@ -1,13 +1,13 @@
 import { ChatCard } from "@/components/screens/chats/ChatCard"
 import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
 import { ThemedView } from "@/components/ui/ThemedView"
+import { useWebSocket } from "@/lib/services/WebSocketProvider"
 import { backend } from "@/lib/services/backend"
 import { useBackend } from "@/lib/services/backend/use"
-import { useWebSocket } from "@/lib/services/WebSocketProvider"
 import type { ChatListResponse } from "@slash/backend/src/api/chats/chats.api"
 import { useRouter } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
-import { Alert, FlatList, StyleSheet } from "react-native"
+import { FlatList, StyleSheet } from "react-native"
 import ConfirmationModal from "../common/ConfirmationModal"
 
 type ChatsListProps = {
@@ -26,8 +26,10 @@ export function ChatsList({
   const { chats, setChats } = useWebSocket()
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
+
   const [isModalVisible, setModalVisible] = useState(false)
   const [chatToDelete, setChatToDelete] = useState<string | null>(null)
+
   const {
     data: backendChats = [],
     loading,
@@ -51,6 +53,7 @@ export function ChatsList({
       haveTo: hasMore
     }
   )
+
   useEffect(() => {
     if (backendChats && backendChats.length > 0) {
       setChats((prevChats) => {
@@ -72,10 +75,12 @@ export function ChatsList({
       })
     }
   }, [backendChats, setChats])
+
   function openChat(userId: string) {
     // @ts-ignore
     router.push(`/chats/${userId}`)
   }
+
   const deleteChat = (chatId: string) => {
     setChatToDelete(chatId)
     setModalVisible(true)
@@ -101,6 +106,7 @@ export function ChatsList({
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
       />
+
       {!loading ? (
         chats?.length && chats.length > 0 ? (
           <FlatList

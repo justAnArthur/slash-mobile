@@ -2,9 +2,9 @@ import { Avatar } from "@/components/screens/common/Avatar"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { useTheme } from "@/lib/a11y/ThemeContext"
 import { authClient } from "@/lib/auth"
+import type { MessageResponse } from "@slash/backend/src/api/messages/messages.api"
 import type React from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
-import type { MessageResponse } from "@slash/backend/src/api/messages/messages.api"
 
 interface ChatCardProps {
   type: "group" | "private"
@@ -25,10 +25,14 @@ export const ChatCard: React.FC<ChatCardProps> = ({
 
   const { data: session } = authClient.useSession()
   const isMe = lastMessage && session?.user.id === lastMessage.senderId
+
   let truncatedLastMessage = lastMessage && getTruncatedLastMessage(lastMessage)
+
   if (type === "group" && !isMe) {
     truncatedLastMessage = `${lastMessage?.name || "Info"}: ${truncatedLastMessage}`
-  } else if (isMe) truncatedLastMessage = `Me: ${truncatedLastMessage}`
+  } else if (isMe) {
+    truncatedLastMessage = `Me: ${truncatedLastMessage}`
+  }
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
