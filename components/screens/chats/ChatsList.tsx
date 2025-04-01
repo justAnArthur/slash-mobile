@@ -45,7 +45,7 @@ export function ChatsList({
       transform: (data, { prev }) => {
         console.log("setHasMore", data?.length, pageSize)
         setHasMore(data?.length === pageSize)
-        return (prev || []).concat(data?.data)
+        return (prev || []).concat(data?.data || [])
       },
       haveTo: hasMore
     }
