@@ -5,13 +5,13 @@
   },
   "build": {
     "development": {
+      "environment": "development",
       "developmentClient": true,
       "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "https://136a-178-253-181-191.ngrok-free.app"
-      }
+      "env": {}
     },
     "preview": {
+      "environment": "preview",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
@@ -21,6 +21,7 @@
       }
     },
     "production": {
+      "environment": "production",
       "autoIncrement": true
     }
   },
