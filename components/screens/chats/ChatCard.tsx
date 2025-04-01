@@ -1,10 +1,11 @@
-import {Avatar} from "@/components/screens/common/Avatar"
-import {ThemedText} from "@/components/ui/ThemedText"
-import {useTheme} from "@/lib/a11y/ThemeContext"
-import {authClient} from "@/lib/auth"
-import type {MessageResponse} from "@slash/backend/src/api/messages/messages.api"
-import type React, {ReactNode} from "react"
-import {StyleSheet, TouchableOpacity, View} from "react-native"
+import { Avatar } from "@/components/screens/common/Avatar"
+import { ThemedText } from "@/components/ui/ThemedText"
+import { useTheme } from "@/lib/a11y/ThemeContext"
+import { authClient } from "@/lib/auth"
+import type { MessageResponse } from "@slash/backend/src/api/messages/messages.api"
+import type React from "react"
+import type { ReactNode } from "react"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
 
 interface ChatCardProps {
   type: "group" | "private"
