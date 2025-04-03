@@ -69,6 +69,27 @@ const en = {
     settings: {
       title: "Settings",
       logOut: "Log Out"
+    },
+    totp: {
+      setup: "Setup 2-FA",
+      "2fa": "Two-Factor Authentication",
+      setup_in_app: "Click button to set up TOTP in an Authenticator app",
+      click_me: "Click me!",
+      enter_code_in_app: "Or enter this code in an Authenticator app:",
+      copied: "Copied!",
+      enter_code: "Enter the 6-digit code from your authenticator app",
+      verify: "Verify",
+      app_not_found: "App Not Found",
+      please_install: "Please install an Authenticator app. Your secret is: ",
+      please_install_suffix:
+        ". Open the Authenticator app, select 'Enter a setup key,' and paste it.",
+      error: {
+        code: "Invalid code entered",
+        verify: "Failed to verify. Please try again."
+      },
+      already: "Two-factor authentication already set!",
+      turn_off: "Turn off",
+      back: "Back"
     }
   }
 }

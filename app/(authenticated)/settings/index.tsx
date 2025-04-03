@@ -1,5 +1,6 @@
 import { Collapsible } from "@/components/Collapsible"
 import { UpdateUserInfo } from "@/components/screens/common/UpdateUserInfo"
+import TOTPSetup from "@/components/screens/totp/TOTPSetup"
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
@@ -24,6 +25,9 @@ export default function SettingsModal() {
         <Collapsible title="Profile">
           <UpdateUserInfo />
           <LogOutButton />
+        </Collapsible>
+        <Collapsible title="2-FA">
+          <TOTPSetup />
         </Collapsible>
         <Collapsible title="i18n">
           <LanguageSwitcher />

@@ -1,12 +1,14 @@
+import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedInput } from "@/components/ui/ThemedInput"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
 import { authClient } from "@/lib/auth"
 import { useI18nT } from "@/lib/i18n/Context"
+import { backend } from "@/lib/services/backend"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { ImageBackground, StyleSheet } from "react-native"
+import { ImageBackground, StyleSheet, View } from "react-native"
 
 export default function SignInScreen() {
   const t = useI18nT("screens.signIn")
@@ -27,30 +29,41 @@ export default function SignInScreen() {
     })
 
     if (res.error) setError(JSON.stringify(res.error))
-    else router.replace("/")
+    else {
+      const res = await backend.users.totp.check.get()
+      if (res.status === 200) router.replace("/sign-in/2fa")
+      else if (res.status === 400) router.replace("/")
+    }
 
     setLoading(false)
   }
-
   return (
     <ThemedView style={styles.content}>
       <ThemedText type="title" style={styles.title}>
         {t("title")}
       </ThemedText>
 
-      <ThemedInput
-        placeholder={t("email")}
-        value={email}
-        onChangeText={setEmail}
-      />
+      {loading ? (
+        <View>
+          <ThemedActivityIndicator size="large" />
+        </View>
+      ) : (
+        <>
+          <ThemedInput
+            placeholder={t("email")}
+            value={email}
+            onChangeText={setEmail}
+          />
 
-      <ThemedInput
-        placeholder={t("password")}
-        value={password}
-        onChangeText={setPassword}
-      />
+          <ThemedInput
+            placeholder={t("password")}
+            value={password}
+            onChangeText={setPassword}
+          />
 
-      <ThemedButton title={t("submit")} onPress={handleSignIn} />
+          <ThemedButton title={t("submit")} onPress={handleSignIn} />
+        </>
+      )}
 
       {error && (
         <ThemedText>

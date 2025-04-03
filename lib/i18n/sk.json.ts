@@ -71,6 +71,32 @@ const sk: Translations = {
     settings: {
       title: "Nastavenia",
       logOut: "Odhlásiť sa"
+    },
+    totp: {
+      setup: "Nastaviť TOTP",
+
+      "2fa": "Dvojfaktorová Autentifikácia",
+      setup_in_app:
+        "Kliknutím na tlačidlo nastavíte TOTP v aplikácii Authenticator",
+      click_me: "Klikni na mňa!",
+      enter_code_in_app:
+        "Alebo zadajte tento kód do aplikácie autentifikátora:",
+
+      copied: "Skopírované!",
+      enter_code: "Zadajte TOTP kód",
+      verify: "Overiť TOTP",
+      app_not_found: "Aplikácia nenájdená",
+      please_install:
+        "Prosím, nainštalujte aplikáciu autentifikátora. Váš tajný kód je: ",
+      please_install_suffix:
+        ". Otvorte aplikáciu autentifikátora, vyberte 'Zadať nastavovací kľúč' a vložte ho.",
+      error: {
+        code: "Prosím, zadajte TOTP kód.",
+        verify: "Overenie TOTP zlyhalo. Skúste to znova."
+      },
+      already: "Dvojfaktorová autentifikácia je už nastavená!",
+      turn_off: "Vypnúť",
+      back: "Späť"
     }
   }
 }

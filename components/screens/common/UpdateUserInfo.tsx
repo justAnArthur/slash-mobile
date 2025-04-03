@@ -63,7 +63,6 @@ export const UpdateUserInfo = ({ onSuccess }: UpdateUserInfoProps) => {
         if (response.data) {
           const url = bufferToUri(response.data)
           setAvatarUri(url)
-          console.log(url)
           return url
         }
       }
@@ -121,7 +120,7 @@ export const UpdateUserInfo = ({ onSuccess }: UpdateUserInfoProps) => {
       <TextInput
         style={inputStyles.input}
         placeholder={t("profile.bioPlaceholder")}
-        placeholderTextColor={inputStyles.inputPlaceholder.color}
+        //placeholderTextColor={inputStyles.inputPlaceholder.color}
         multiline={true}
         value={bio}
         onChangeText={setBio}
@@ -155,9 +154,6 @@ export const UpdateUserInfo = ({ onSuccess }: UpdateUserInfoProps) => {
         padding: 10,
         borderWidth: 2,
         borderRadius: 5
-      },
-      inputPlaceholder: {
-        color: `${theme.primaryForeground} / 10`
       },
       button: {
         width: "100%"
@@ -268,7 +264,7 @@ export const UploadAvatar = ({
               contentFit="contain"
             />
           ) : (
-            <Feather name="user" size={40} color={theme.primaryForeground} />
+            <Feather name="user" size={40} color={theme.foreground} />
           )}
           {!isLoading && (
             <ThemedView style={styles.uploadIcon}>
@@ -280,7 +276,6 @@ export const UploadAvatar = ({
 
       <Modal
         animationType="slide"
-        presentationStyle="formSheet"
         visible={isModalOpen}
         onRequestClose={() => !isLoading && setIsModalOpen(false)}
         transparent={true}
