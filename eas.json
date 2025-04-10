@@ -6,7 +6,6 @@
   "build": {
     "development": {
       "environment": "development",
-      "developmentClient": true,
       "distribution": "internal",
       "env": {}
     },
@@ -22,7 +21,10 @@
     },
     "production": {
       "environment": "production",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://slash-backend.justadomainname.dev"
+      }
     }
   },
   "submit": {
