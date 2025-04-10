@@ -5,11 +5,15 @@ const sk: Translations = {
 
   common: {
     error: "Chyba",
+    ok: "Ok",
+    cancel: "Zrušiť",
     locales: {
+      current: "Aktuálny jazyk: ",
       en: "Angličtina",
       sk: "Slovenčina"
     },
     themes: {
+      current: "Aktuálna téma: ",
       light: "Svetlý",
       dark: "Tmavý"
     },
@@ -44,6 +48,12 @@ const sk: Translations = {
       settings: "Nastavenia"
     },
     chats: {
+      actions: {
+        delete: "Vymazať",
+        pin: "Pripnúť"
+      },
+      noChats: "Žiadne chaty",
+      noPinnedChats: "Žiadne pripnuté chaty",
       input: {
         placeholder: "Napíšte správu",
         send: "Odoslať"
@@ -76,27 +86,25 @@ const sk: Translations = {
       setup: "Nastaviť TOTP",
 
       "2fa": "Dvojfaktorová Autentifikácia",
+      backup_codes:
+        "Uložte záložné kódy, môžete ich použiť v prípade straty zariadenia",
       setup_in_app:
         "Kliknutím na tlačidlo nastavíte TOTP v aplikácii Authenticator",
       click_me: "Klikni na mňa!",
-      enter_code_in_app:
-        "Alebo zadajte tento kód do aplikácie autentifikátora:",
-
-      copied: "Skopírované!",
+      enter_password: "Pre pokračovanie zadajte svoje heslo",
       enter_code: "Zadajte TOTP kód",
       verify: "Overiť TOTP",
-      app_not_found: "Aplikácia nenájdená",
-      please_install:
-        "Prosím, nainštalujte aplikáciu autentifikátora. Váš tajný kód je: ",
-      please_install_suffix:
-        ". Otvorte aplikáciu autentifikátora, vyberte 'Zadať nastavovací kľúč' a vložte ho.",
       error: {
         code: "Prosím, zadajte TOTP kód.",
         verify: "Overenie TOTP zlyhalo. Skúste to znova."
       },
       already: "Dvojfaktorová autentifikácia je už nastavená!",
       turn_off: "Vypnúť",
-      back: "Späť"
+      back: "Späť",
+      finish: "Ukončiť",
+      copy_all: "Kopírovať",
+      copied: "Skopírované!",
+      save_codes_warning: "Nezabudnite tieto kódy uložiť, už ich neuvidíte."
     }
   }
 }

@@ -5,7 +5,6 @@ import { useEffect } from "react"
 import "react-native-reanimated"
 import { ThemeProvider } from "@/lib/a11y/ThemeContext"
 import { I18nProvider } from "@/lib/i18n/Context"
-import { WebSocketProvider } from "@/lib/services/WebSocketProvider"
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 // noinspection JSIgnoredPromiseFromCall
@@ -28,9 +27,7 @@ export default function RootLayout() {
   return (
     <I18nProvider>
       <ThemeProvider>
-        <WebSocketProvider>
-          <Slot />
-        </WebSocketProvider>
+        <Slot />
       </ThemeProvider>
     </I18nProvider>
   )

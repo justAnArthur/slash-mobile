@@ -1,14 +1,14 @@
+import { ChatActions } from "@/components/screens/chats/ChatActions"
 import { ChatCard } from "@/components/screens/chats/ChatCard"
 import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
 import { ThemedView } from "@/components/ui/ThemedView"
+import { useWebSocket } from "@/lib/services/WebSocketProvider"
 import { backend } from "@/lib/services/backend"
 import { useBackend } from "@/lib/services/backend/use"
-import { useWebSocket } from "@/lib/services/WebSocketProvider"
 import type { ChatListResponse } from "@slash/backend/src/api/chats/chats.api"
 import { useRouter } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
-import { Alert, FlatList, StyleSheet } from "react-native"
-import ConfirmationModal from "../common/ConfirmationModal"
+import { FlatList, StyleSheet } from "react-native"
 
 type ChatsListProps = {
   pageSize?: number
@@ -26,8 +26,7 @@ export function ChatsList({
   const { chats, setChats } = useWebSocket()
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
-  const [isModalVisible, setModalVisible] = useState(false)
-  const [chatToDelete, setChatToDelete] = useState<string | null>(null)
+
   const {
     data: backendChats = [],
     loading,
@@ -46,11 +45,12 @@ export function ChatsList({
       transform: (data, { prev }) => {
         console.log("setHasMore", data?.length, pageSize)
         setHasMore(data?.length === pageSize)
-        return (prev || []).concat(data?.data)
+        return (prev || []).concat(data?.data || [])
       },
       haveTo: hasMore
     }
   )
+
   useEffect(() => {
     if (backendChats && backendChats.length > 0) {
       setChats((prevChats) => {
@@ -71,48 +71,42 @@ export function ChatsList({
         })
       })
     }
+
+    return () => {
+      setChats([])
+    }
   }, [backendChats, setChats])
+
+  function removeChatFromLocal(chatId: string) {
+    setChats((prev) => prev.filter((chat) => chat.id !== chatId))
+  }
+
   function openChat(userId: string) {
     // @ts-ignore
     router.push(`/chats/${userId}`)
   }
-  const deleteChat = (chatId: string) => {
-    setChatToDelete(chatId)
-    setModalVisible(true)
-  }
 
-  const confirmDelete = async () => {
-    if (chatToDelete) {
-      await backend.chats[`${chatToDelete}`].delete()
-      setChats((prev) => prev.filter((chat) => chat.id !== chatToDelete))
-      setModalVisible(false)
-      setChatToDelete(null)
-    }
-  }
-
-  const cancelDelete = () => {
-    setModalVisible(false)
-    setChatToDelete(null)
-  }
   return (
     <ThemedView style={styles.container}>
-      <ConfirmationModal
-        visible={isModalVisible}
-        onConfirm={confirmDelete}
-        onCancel={cancelDelete}
-      />
       {!loading ? (
         chats?.length && chats.length > 0 ? (
           <FlatList
             data={chats}
-            keyExtractor={(chat: ChatListResponse) => chat.id}
-            renderItem={({ item }) => (
+            keyExtractor={(chat) => chat.id}
+            renderItem={({ item: chatResponse }) => (
               <ChatCard
-                type={item.type as "group" | "private"}
-                username={item.name}
-                lastMessage={item.lastMessage}
-                onPress={() => openChat(item.id)}
-                onDelete={() => deleteChat(item.id)}
+                type={chatResponse.type}
+                username={chatResponse.name}
+                lastMessage={chatResponse.lastMessage}
+                onPress={() => openChat(chatResponse.id)}
+                actionsChildren={
+                  <ChatActions
+                    chatId={chatResponse.id}
+                    pinned={!!query?.pinned}
+                    onDelete={() => removeChatFromLocal(chatResponse.id)}
+                    onPin={() => router.push("/")}
+                  />
+                }
               />
             )}
             onEndReached={() => setPage((prev) => prev + 1)}

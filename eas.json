@@ -5,19 +5,23 @@
   },
   "build": {
     "development": {
+      "environment": "development",
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {}
     },
     "preview": {
+      "environment": "preview",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "https://c507-147-175-161-61.ngrok-free.app"
+        "EXPO_PUBLIC_BACKEND_URL": "https://slash-backend.justadomainname.dev"
       }
     },
     "production": {
+      "environment": "production",
       "autoIncrement": true
     }
   },

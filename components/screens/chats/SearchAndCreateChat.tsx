@@ -1,4 +1,4 @@
-import { ChatCard, type LastMessage } from "@/components/screens/chats/ChatCard"
+import { ChatCard } from "@/components/screens/chats/ChatCard"
 import { Avatar } from "@/components/screens/common/Avatar"
 import { ThemedButton, useButtonStyles } from "@/components/ui/ThemedButton"
 import { ThemedInput, useInputStyles } from "@/components/ui/ThemedInput"
@@ -57,7 +57,6 @@ type User = {
   name: string
   email: string
   image: string | null
-  lastMessage: LastMessage
 }
 
 type FindUserFormProps = {
@@ -163,6 +162,8 @@ function FindUserForm({ closeModal }: FindUserFormProps) {
       </View>
     )
 
+  console.log({ users })
+
   return (
     <View style={styles.form}>
       <View style={styles.handleContainer}>
@@ -205,10 +206,10 @@ function FindUserForm({ closeModal }: FindUserFormProps) {
           {users.length > 0 ? (
             users.map((user) => (
               <ChatCard
+                type="private"
                 key={user.id}
-                avatar={user.image}
                 username={user.name}
-                lastMessage={user.lastMessage}
+                avatar={user.image}
                 onPress={() => handleSelectUser(user)}
               />
             ))

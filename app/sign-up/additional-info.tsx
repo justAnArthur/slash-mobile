@@ -1,14 +1,16 @@
-import { signInStyles } from "@/app/sign-in"
-import { useTheme } from "@/lib/a11y/ThemeContext"
+import { useSignInStyles } from "@/app/sign-in"
+import { UpdateUserInfo } from "@/components/screens/common/UpdateUserInfo"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
+import { useTheme } from "@/lib/a11y/ThemeContext"
 import { useRouter } from "expo-router"
 import React from "react"
-import { ImageBackground, StyleSheet, TextInput } from "react-native"
-import { UpdateUserInfo } from "@/components/screens/common/UpdateUserInfo"
+import { ImageBackground, StyleSheet } from "react-native"
 
 export default function AdditionalInfo() {
   const router = useRouter()
+  const signInStyles = useSignInStyles()
+
   return (
     <ThemedView style={signInStyles.content}>
       <ThemedText type="title" style={signInStyles.title}>

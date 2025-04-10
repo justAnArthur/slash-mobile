@@ -25,6 +25,11 @@ const navigation = (textColor: string | OpaqueColorValue) =>
         name: "Settings",
         href: "/settings",
         children: <Octicons name="gear" size={24} color={textColor} />
+      },
+      {
+        name: "Push",
+        href: "/push",
+        children: <Octicons name="bell" size={24} color={textColor} />
       }
     ],
 

@@ -1,14 +1,11 @@
 import { authClient } from "@/lib/auth"
-import type {
-  ChatListResponse,
-  ChatResponse
-} from "@slash/backend/src/api/chats/chats.api"
+import type { ChatListResponse } from "@slash/backend/src/api/chats/chats.api"
 import type { MessageResponse } from "@slash/backend/src/api/messages/messages.api"
 import type React from "react"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
-import { useBackend } from "./backend/use"
 import { backend } from "./backend"
 import { WS_URL } from "./backend/url"
+import { useBackend } from "./backend/use"
 
 type WebSocketContextType = {
   messages: Record<string, MessageResponse[]>
@@ -26,12 +23,14 @@ const WebSocketContext = createContext<WebSocketContextType | undefined>(
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
+  const { data: session } = authClient.useSession()
+
   const ws = useRef<WebSocket | null>(null)
+
+  const [chats, setChats] = useState<ChatListResponse[]>([])
   const [messages, setMessages] = useState<Record<string, MessageResponse[]>>(
     {}
   )
-  const [chats, setChats] = useState<ChatListResponse[]>([])
-  const { data: session } = authClient.useSession()
   const [newChatId, setNewChatId] = useState<string | null>(null)
 
   const { data: newChatData } = useBackend<ChatListResponse>(
@@ -120,7 +119,9 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useWebSocket = (): WebSocketContextType => {
   const context = useContext(WebSocketContext)
+
   if (!context)
     throw new Error("useWebSocket must be used within a WebSocketProvider")
+
   return context
 }

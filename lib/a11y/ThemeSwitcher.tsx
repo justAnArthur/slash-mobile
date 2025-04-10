@@ -11,7 +11,8 @@ export const ThemeSwitcher = () => {
   return (
     <View style={styles.container}>
       <ThemedText style={styles.header}>
-        Current theme mode: {currentThemeMode}
+        {t("current")}
+        {t(currentThemeMode)}
       </ThemedText>
       <View style={styles.buttonContainer}>
         {themeModes.map((themeMode) => (

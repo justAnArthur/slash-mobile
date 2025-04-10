@@ -1,55 +1,61 @@
+import React, { useState, useEffect } from "react"
+import { View, Linking, StyleSheet, Alert } from "react-native"
+import { useI18nT } from "@/lib/i18n/Context"
+import { authClient } from "@/lib/auth"
+import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
+import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedInput } from "@/components/ui/ThemedInput"
-import { ThemedText } from "@/components/ui/ThemedText"
-import { backend } from "@/lib/services/backend"
 import { useTheme } from "@/lib/a11y/ThemeContext"
-import React, { useState } from "react"
-import {
-  View,
-  Image,
-  Platform,
-  TouchableOpacity,
-  Alert,
-  Linking,
-  StyleSheet
-} from "react-native"
+import ConfirmationModal from "../common/ConfirmationModal"
 import * as Clipboard from "expo-clipboard"
-import { useBackend } from "@/lib/services/backend/use"
-import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
-import { useI18nT } from "@/lib/i18n/Context"
 
-type TOTPSecret = {
-  qrCodeUrl: string
-  otpauthUrl: string
-  secret: string
-}
 export default function TOTPSetup() {
   const t = useI18nT("screens.totp")
-  const [totpSecret, setTotpSecret] = useState<TOTPSecret>({
-    qrCodeUrl: "",
-    otpauthUrl: "",
-    secret: ""
-  })
+  const { data: session } = authClient.useSession()
+  const [is2FAEnabled, setIs2FAEnabled] = useState(
+    session?.user.twoFactorEnabled || false
+  )
+  const [loading, setLoading] = useState(true)
+  const [password, setPassword] = useState("")
   const [totpCode, setTotpCode] = useState("")
-  const [copied, setCopied] = useState(false)
-  const [isTurnedOn, setIsTurnedOn] = useState(false)
-  const [turnOff, setTurnOff] = useState(false)
+  const [enableData, setEnableData] = useState<
+    Awaited<ReturnType<typeof authClient.twoFactor.enable>>
+  >({
+    backupCodes: [],
+    totpURI: ""
+  })
+  const [showTurnOffForm, setShowTurnOffForm] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
+  const [showBackupCodes, setShowBackupCodes] = useState(false)
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
+  const [showCopiedMessage, setShowCopiedMessage] = useState(false)
   const styles = useStyles()
 
-  const { loading } = useBackend(() => backend.users.totp.check.get(), [], {
-    transform: (res) => {
-      setIsTurnedOn(res.status === 200)
-    }
-  })
+  useEffect(() => {
+    setLoading(false)
+  }, [is2FAEnabled])
+
   const setupTOTP = async () => {
-    try {
-      const data = await backend.users.totp.setup.post().then((res) => res.data)
-      setTotpSecret(data)
-      setErrorMessage("")
-    } catch (error) {
-      console.error("TOTP setup failed:", error)
+    if (!password) {
+      setErrorMessage(t("error.password_required"))
+      return
+    }
+    setLoading(true)
+    const response = await authClient.twoFactor
+      .enable({ password })
+      .catch((err) => {
+        console.error(err)
+        setErrorMessage(t("error.network"))
+      })
+      .finally(() => setLoading(false))
+
+    if (!response) return
+    if (response.error) {
+      console.error("TOTP setup failed:", response.error)
       setErrorMessage(t("error.verify"))
+    } else {
+      setEnableData(response.data)
     }
   }
 
@@ -58,67 +64,59 @@ export default function TOTPSetup() {
       setErrorMessage(t("error.code"))
       return
     }
-
     try {
-      const data = await backend.users.totp.setup
-        .post({ token: totpCode, secret: totpSecret.secret })
-        .then((res) => res.data)
-
-      if (data.success) {
-        setIsTurnedOn(true)
-        setErrorMessage("")
-      }
+      setLoading(true)
+      await authClient.twoFactor.verifyTotp({ code: totpCode })
+      setShowBackupCodes(true)
+      setErrorMessage("")
     } catch (error) {
       console.error("TOTP verification failed:", error)
       setErrorMessage(t("error.code"))
     } finally {
+      setLoading(false)
       setTotpCode("")
     }
   }
+  const handleContinue = () => {
+    setShowConfirmationModal(true)
+  }
+
+  const confirmContinue = () => {
+    setShowConfirmationModal(false)
+    setIs2FAEnabled(true)
+    setShowBackupCodes(false)
+    setEnableData({ backupCodes: [], totpURI: "" }) // Reset data
+  }
   const turnOffTOTP = async () => {
-    if (!isValidCode(totpCode)) {
-      setErrorMessage(t("error.code"))
-      return
-    }
-
     try {
-      const data = await backend.users.totp.unset
-        .post({ token: totpCode })
-        .then((res) => res.data)
-
-      if (data.success) {
-        setIsTurnedOn(false)
-        setTurnOff(false)
-        setErrorMessage("")
-        setTotpCode("")
-      }
+      setLoading(true)
+      await authClient.twoFactor.disable({ password })
+      setIs2FAEnabled(false)
+      setShowTurnOffForm(false)
+      setErrorMessage("")
     } catch (error) {
-      console.error("TOTP turn off failed:", error)
-      setErrorMessage(t("error.code"))
+      console.error("TOTP disable failed:", error)
+      setErrorMessage(t("error.verify"))
+    } finally {
+      setLoading(false)
+      setPassword("")
     }
   }
 
   const handleLinkPress = async () => {
     try {
-      const supported = await Linking.canOpenURL(totpSecret.otpauthUrl)
-      if (supported) {
-        await Linking.openURL(totpSecret.otpauthUrl)
-      } else {
-        Alert.alert(
-          t("app_not_found"),
-          t("please_install") + totpSecret.secret + t("please_install_suffix")
-        )
-      }
+      const supported = await Linking.canOpenURL(enableData.totpURI)
+      if (supported) await Linking.openURL(enableData.totpURI)
     } catch (error) {
       console.error("Link handling failed:", error)
       setErrorMessage(t("error.verify"))
     }
   }
-
-  const handleCopySecret = async () => {
-    await Clipboard.setStringAsync(totpSecret.secret)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const copyBackupCodes = async () => {
+    const codesText = enableData.backupCodes.join("\n")
+    await Clipboard.setStringAsync(codesText)
+    setShowCopiedMessage(true)
+    setTimeout(() => setShowCopiedMessage(false), 2000)
   }
 
   const renderLoading = () => (
@@ -126,6 +124,7 @@ export default function TOTPSetup() {
       <ThemedActivityIndicator size="large" />
     </View>
   )
+
   const renderEnabledState = () => (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -135,63 +134,60 @@ export default function TOTPSetup() {
         <ThemedButton
           title={t("turn_off")}
           style={styles.button}
-          onPress={() => setTurnOff(true)}
+          onPress={() => setShowTurnOffForm(true)}
         />
       </View>
     </View>
   )
-  const renderTurnOff = () => (
+
+  const renderTurnOffForm = () => (
     <View style={styles.container}>
       <View style={styles.content}>
-        <TOTPForm
-          totpCode={totpCode}
-          setTotpCode={setTotpCode}
-          errorMessage={errorMessage}
-          onSubmit={turnOffTOTP}
-          buttonTitle={t("turn_off")}
+        <ThemedText style={styles.text}>{t("enter_password")}</ThemedText>
+        <ThemedInput
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
         />
+        <ThemedButton
+          title={t("turn_off")}
+          style={styles.button}
+          onPress={turnOffTOTP}
+        />
+        {errorMessage && (
+          <ThemedText style={styles.error}>{errorMessage}</ThemedText>
+        )}
       </View>
     </View>
   )
 
-  const renderSetup = () => (
+  const renderSetupForm = () => (
     <View style={styles.container}>
-      {!totpSecret.qrCodeUrl ? (
-        <ThemedButton
-          title={t("setup")}
-          onPress={setupTOTP}
-          style={styles.button}
-        />
-      ) : (
+      {!enableData.totpURI ? (
         <View style={styles.content}>
-          {Platform.OS === "web" ? (
-            <>
-              <Image
-                source={{ uri: totpSecret.qrCodeUrl }}
-                style={styles.qrCodeImage}
-                contentFit="contain"
-              />
-            </>
-          ) : (
-            <>
-              <ThemedText style={styles.text}>{t("setup_in_app")}</ThemedText>
-              <ThemedButton
-                onPress={handleLinkPress}
-                style={[styles.button]}
-                title={t("click_me")}
-              />
-            </>
-          )}
-
-          <ThemedText style={[styles.instructionText, styles.text]}>
-            {/*Or enter this code in an Authenticator app:*/}
-            {t("enter_code_in_app")}
-          </ThemedText>
-          <TouchableOpacity onPress={handleCopySecret}>
-            <ThemedText style={[styles.secretText, styles.text]}>
-              {copied ? t("copied") : totpSecret.secret}
-            </ThemedText>
-          </TouchableOpacity>
+          <ThemedText style={styles.text}>{t("enter_password")}</ThemedText>
+          <ThemedInput
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={styles.input}
+          />
+          <ThemedButton
+            title={t("setup")}
+            style={styles.button}
+            onPress={setupTOTP}
+          />
+          <ThemedText style={styles.error}>{errorMessage}</ThemedText>
+        </View>
+      ) : !showBackupCodes ? (
+        <View style={styles.content}>
+          <ThemedText style={styles.text}>{t("setup_in_app")}</ThemedText>
+          <ThemedButton
+            onPress={handleLinkPress}
+            style={styles.button}
+            title={t("click_me")}
+          />
           <TOTPForm
             totpCode={totpCode}
             setTotpCode={setTotpCode}
@@ -200,16 +196,51 @@ export default function TOTPSetup() {
             buttonTitle={t("verify")}
           />
         </View>
+      ) : (
+        <View style={styles.content}>
+          <ThemedText style={[styles.instructionText, styles.text]}>
+            {t("backup_codes")}
+          </ThemedText>
+          {enableData.backupCodes.map((code, index) => (
+            <ThemedText key={index} style={styles.text}>
+              {code}
+            </ThemedText>
+          ))}
+          {showCopiedMessage && (
+            <ThemedText style={styles.message}>{t("copied")}</ThemedText>
+          )}
+          <ThemedButton
+            title={t("copy_all")}
+            style={styles.button}
+            onPress={copyBackupCodes}
+          />
+          <ThemedButton
+            title={t("finish")}
+            style={styles.button}
+            onPress={handleContinue}
+          />
+        </View>
       )}
     </View>
   )
+
   if (loading) return renderLoading()
-  if (turnOff) return renderTurnOff()
-  if (isTurnedOn) return renderEnabledState()
-  return renderSetup()
+  if (showTurnOffForm) return renderTurnOffForm()
+  if (is2FAEnabled) return renderEnabledState()
+  return (
+    <>
+      {renderSetupForm()}
+      <ConfirmationModal
+        title={t("save_codes_warning")}
+        visible={showConfirmationModal}
+        onConfirm={confirmContinue}
+        onCancel={() => setShowConfirmationModal(false)}
+      />
+    </>
+  )
 }
 
-const isValidCode = (code: string): boolean => code.length === 6
+export const isValidCode = (code: string): boolean => code.length === 6
 
 type TOTPFormProps = {
   totpCode: string
@@ -218,6 +249,7 @@ type TOTPFormProps = {
   onSubmit: () => void
   buttonTitle: string
 }
+
 export const TOTPForm: React.FC<TOTPFormProps> = ({
   totpCode,
   setTotpCode,
@@ -226,26 +258,9 @@ export const TOTPForm: React.FC<TOTPFormProps> = ({
   buttonTitle
 }) => {
   const t = useI18nT("screens.totp")
-  const styles = StyleSheet.create({
-    text: {
-      textAlign: "center"
-    },
-
-    input: {
-      width: "100%",
-      maxWidth: 300,
-      borderWidth: 1.5,
-      padding: 12
-    },
-
-    button: {
-      width: "100%",
-      maxWidth: 300,
-      padding: 12
-    }
-  })
+  const styles = useStyles()
   return (
-    <>
+    <View style={styles.content}>
       <ThemedText style={styles.text}>{t("enter_code")}</ThemedText>
       <ThemedInput
         value={totpCode}
@@ -253,24 +268,27 @@ export const TOTPForm: React.FC<TOTPFormProps> = ({
         keyboardType="numeric"
         style={styles.input}
         maxLength={6}
-        autoFocus={true}
       />
       <ThemedButton
         title={buttonTitle}
         style={styles.button}
         onPress={onSubmit}
       />
-      <ThemedText>{errorMessage}</ThemedText>
-    </>
+      {errorMessage && (
+        <ThemedText style={styles.error}>{errorMessage}</ThemedText>
+      )}
+    </View>
   )
 }
+
 function useStyles() {
   const { theme } = useTheme()
   return StyleSheet.create({
     container: {
       padding: 24,
       alignItems: "center",
-      justifyContent: "center"
+      justifyContent: "center",
+      flex: 1
     },
     content: {
       width: "100%",
@@ -280,11 +298,6 @@ function useStyles() {
     qrCodeImage: {
       width: 200,
       height: 200,
-      borderRadius: 12,
-      borderWidth: 1.5
-    },
-    linkContainer: {
-      padding: 12,
       borderRadius: 12,
       borderWidth: 1.5
     },
@@ -311,6 +324,14 @@ function useStyles() {
       width: "100%",
       maxWidth: 300,
       padding: 12
+    },
+    error: {
+      color: "red",
+      textAlign: "center"
+    },
+    message: {
+      color: "green",
+      textAlign: "center"
     }
   })
 }

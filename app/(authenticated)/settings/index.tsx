@@ -24,7 +24,6 @@ export default function SettingsModal() {
 
         <Collapsible title="Profile">
           <UpdateUserInfo />
-          <LogOutButton />
         </Collapsible>
         <Collapsible title="2-FA">
           <TOTPSetup />
@@ -36,6 +35,7 @@ export default function SettingsModal() {
           <ThemeSwitcher />
           {/*<ContrastSwitcher />*/}
         </Collapsible>
+        <LogOutButton />
       </ScrollView>
     </ThemedView>
   )

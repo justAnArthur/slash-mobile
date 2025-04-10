@@ -5,15 +5,16 @@ import {
 } from "@/components/screens/chat/ChatInputForm"
 import { MessageCard } from "@/components/screens/chat/MessageCard"
 import { Avatar } from "@/components/screens/common/Avatar"
+import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
 import { ThemedLink } from "@/components/ui/ThemedLink"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
 import { useTheme } from "@/lib/a11y/ThemeContext"
 import { authClient } from "@/lib/auth"
+import { useWebSocket } from "@/lib/services/WebSocketProvider"
 import { backend } from "@/lib/services/backend"
 import { BACKEND_URL } from "@/lib/services/backend/url"
 import { useBackend } from "@/lib/services/backend/use"
-import { useWebSocket } from "@/lib/services/WebSocketProvider"
 import { AntDesign } from "@expo/vector-icons"
 import type { ChatResponse } from "@slash/backend/src/api/chats/chats.api"
 import type {
@@ -72,6 +73,7 @@ const ChatScreen = () => {
       haveTo: hasMore
     }
   )
+
   const seenMessageIds = new Set()
   // @ts-ignore
   const messages = [
@@ -152,13 +154,10 @@ const ChatScreen = () => {
     }
   }
 
-  if (chatLoading || messagesLoading) {
-    return <ThemedText>Loading...</ThemedText>
-  }
+  if (chatLoading || messagesLoading) return <ThemedActivityIndicator />
 
-  if (chatError || messagesError || !chat || !messages) {
+  if (chatError || messagesError || !chat || !messages)
     return <ThemedText>Error</ThemedText>
-  }
 
   return (
     <ThemedView style={styles.content}>

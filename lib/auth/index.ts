@@ -4,6 +4,7 @@ import { createAuthClient } from "better-auth/react"
 import * as SecureStore from "expo-secure-store"
 import ExpoSecureStore from "expo-secure-store/src/ExpoSecureStore"
 import { Platform } from "react-native"
+import { twoFactorClient } from "better-auth/client/plugins"
 
 const webStorage: typeof SecureStore = {
   getItem(key: string) {
@@ -44,7 +45,8 @@ export const authClient = createAuthClient({
       scheme: "slash",
       storagePrefix: "slash",
       storage
-    })
+    }),
+    twoFactorClient()
   ],
   fetchOptions: {
     headers: {

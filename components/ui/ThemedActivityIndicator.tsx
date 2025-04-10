@@ -8,31 +8,30 @@ import {
 } from "react-native"
 
 interface ThemedActivityIndicatorProps extends ViewProps {
-  size?: "small" | "large" // You can adjust this based on your needs
+  size?: "small" | "large"
 }
 
 export const ThemedActivityIndicator: React.FC<
   ThemedActivityIndicatorProps
 > = ({ size = "small", style, ...otherProps }) => {
-  const { currentThemeMode } = useTheme()
-  const isDarkMode = currentThemeMode === "dark"
+  const { theme } = useTheme()
 
   return (
     <View style={[styles.container, style]} {...otherProps}>
-      <ActivityIndicator
-        size={size}
-        color={isDarkMode ? "#ffffff" : "#000000"} // Set color based on the theme
-      />
+      <ActivityIndicator size={size} color={theme.foreground} />
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
+    height: "100%",
+    flex: 1,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding: 10 // You can adjust padding as needed
+    padding: 10
   }
 })
 
