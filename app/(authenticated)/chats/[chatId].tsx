@@ -120,8 +120,8 @@ const ChatScreen = () => {
           const uriParts = image.uri.split(".")
           const fileType = uriParts[uriParts.length - 1]
 
-          // @ts-ignore
           formData.append("content", {
+            // @ts-ignore
             uri: image.uri,
             name: `photo.${fileType}`,
             type: `image/${fileType}`
