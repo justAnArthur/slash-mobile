@@ -6,7 +6,8 @@ const config = {
   entryPointStrategy: "expand",
   useTsLinkResolution: true,
   skipErrorChecking: true,
-  plugin: ["typedoc-github-theme"]
+  theme: "hierarchy",
+  plugin: ["typedoc-theme-hierarchy"]
 }
 
 export default config
