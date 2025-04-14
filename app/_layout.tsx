@@ -2,7 +2,6 @@ import { useFonts } from "expo-font"
 import { Slot } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
-import "react-native-reanimated"
 import { ThemeProvider } from "@/lib/a11y/ThemeContext"
 import { I18nProvider } from "@/lib/i18n/Context"
 
