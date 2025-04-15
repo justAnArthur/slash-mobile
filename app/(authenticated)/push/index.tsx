@@ -1,4 +1,4 @@
-import {HandlePushNotifications} from "@/lib/push/HandlePushNotifications"
+import { HandlePushNotifications } from "@/lib/push/HandlePushNotifications"
 
 export default function PushScreen() {
   return <HandlePushNotifications />

@@ -1,7 +1,10 @@
 import { registerForPushNotificationsAsync } from "@/lib/push/register-4-push-notifications"
 import * as Notifications from "expo-notifications"
-import { useEffect, useRef, useState } from "react"
-import { Button, Text, View } from "react-native"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { Button, View } from "react-native"
+import { ThemedText } from "@/components/ui/ThemedText"
+import { backend } from "@/lib/services/backend"
+import * as Device from "expo-device"
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -16,7 +19,7 @@ async function sendPushNotification(expoPushToken: string) {
     to: expoPushToken,
     sound: "default",
     title: "Original Title",
-    body: "And here is the body!",
+    body: `And here is the body! Timestamp: ${new Date().toISOString()}`,
     data: { someData: "goes here" }
   }
 
@@ -39,10 +42,32 @@ export const HandlePushNotifications = () => {
   const notificationListener = useRef<Notifications.EventSubscription>()
   const responseListener = useRef<Notifications.EventSubscription>()
 
+  const deviceInfo = useMemo(
+    () => ({
+      brand: Device.brand,
+      model: Device.modelName,
+      osName: Device.osName,
+      osVersion: String(Device.osVersion),
+      deviceName: Device.deviceName,
+      deviceYear: String(Device.deviceYearClass)
+    }),
+    []
+  )
+
   useEffect(() => {
     registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token ?? ""))
-      .catch((error: any) => setExpoPushToken(`${error}`))
+      .then((pushToken) => {
+        if (!pushToken) return
+
+        setExpoPushToken(pushToken ?? "")
+        return backend.users.device
+          .put({ ...deviceInfo, pushToken })
+          .then((data: any) => {
+            console.log(JSON.stringify(data))
+          })
+          .catch(console.error)
+      })
+      .catch(console.error)
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -68,16 +93,14 @@ export const HandlePushNotifications = () => {
     <View
       style={{ flex: 1, alignItems: "center", justifyContent: "space-around" }}
     >
-      <Text>Your Expo push token: {expoPushToken}</Text>
+      <ThemedText>Your Expo push token: {expoPushToken}</ThemedText>
       <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Text>
-          Title: {notification && notification.request.content.title}{" "}
-        </Text>
-        <Text>Body: {notification && notification.request.content.body}</Text>
-        <Text>
+        <ThemedText>Title: {notification?.request.content.title} </ThemedText>
+        <ThemedText>Body: {notification?.request.content.body}</ThemedText>
+        <ThemedText>
           Data:{" "}
           {notification && JSON.stringify(notification.request.content.data)}
-        </Text>
+        </ThemedText>
       </View>
       <Button
         title="Press to Send Notification"

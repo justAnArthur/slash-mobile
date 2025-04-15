@@ -30,7 +30,7 @@ export function ThemedModal({
     <Modal
       visible={visible}
       animationType="slide"
-      presentationStyle="formSheet"
+      presentationStyle="overFullScreen"
       transparent={true}
       {...otherProps}
     >

@@ -56,7 +56,7 @@ export const UploadAttachmentModalButton = <T extends UploadMessageTypeT>(
 
       <Modal
         animationType="slide"
-        presentationStyle="formSheet"
+        presentationStyle="overFullScreen"
         visible={isOpen}
         onRequestClose={() => setIsOpen(false)}
         transparent={true}

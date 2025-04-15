@@ -1,5 +1,5 @@
-import { LanguageModalSwitcher } from "@/app/sign-in/LanguageSwitcherModal"
-import { ThemeModalSwitcher } from "@/app/sign-in/ThemeSwitcherModal"
+import { LanguageModalSwitcher } from "@/components/screens/sign-in/LanguageSwitcherModal"
+import { ThemeModalSwitcher } from "@/components/screens/sign-in/ThemeSwitcherModal"
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedInput } from "@/components/ui/ThemedInput"
 import { ThemedText } from "@/components/ui/ThemedText"

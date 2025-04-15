@@ -1,6 +1,6 @@
 import { ThemedView } from "@/components/ui/ThemedView"
 import { useTheme } from "@/lib/a11y/ThemeContext"
-import { ThemeSwitcher } from "@/lib/a11y/ThemeSwitcher"
+import { LanguageSwitcher } from "@/lib/i18n/LanguageSwitcher"
 import Feather from "@expo/vector-icons/Feather"
 import React, { useState } from "react"
 import {
@@ -11,21 +11,21 @@ import {
   View
 } from "react-native"
 
-export function ThemeModalSwitcher() {
+export function LanguageModalSwitcher() {
   const { theme } = useTheme()
   const [open, setOpen] = useState(false)
 
-  const languageModalSwitcherStyles = useThemeModalSwitcherStyles()
+  const languageModalSwitcherStyles = useLanguageModalSwitcherStyles()
 
   return (
     <>
       <Pressable onPress={() => setOpen(true)}>
-        <Feather name="moon" size={24} color={theme.foreground} />
+        <Feather name="globe" size={24} color={theme.foreground} />
       </Pressable>
 
       <Modal
         animationType="slide"
-        presentationStyle="formSheet"
+        presentationStyle="overFullScreen"
         visible={open}
         onRequestClose={() => setOpen(false)}
         transparent={true}
@@ -33,7 +33,7 @@ export function ThemeModalSwitcher() {
         <TouchableWithoutFeedback onPress={() => setOpen(false)}>
           <View style={languageModalSwitcherStyles.modalContainer}>
             <ThemedView style={languageModalSwitcherStyles.modal}>
-              <ThemeSwitcher />
+              <LanguageSwitcher />
             </ThemedView>
           </View>
         </TouchableWithoutFeedback>
@@ -42,7 +42,7 @@ export function ThemeModalSwitcher() {
   )
 }
 
-function useThemeModalSwitcherStyles() {
+function useLanguageModalSwitcherStyles() {
   const { theme } = useTheme()
 
   return StyleSheet.create({

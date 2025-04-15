@@ -71,7 +71,7 @@ export const ChatActions = ({
 
       <Modal
         animationType="slide"
-        presentationStyle="formSheet"
+        presentationStyle="overFullScreen"
         visible={open}
         onRequestClose={() => setOpen(false)}
         transparent={true}
