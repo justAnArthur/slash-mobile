@@ -4,7 +4,7 @@ import { type NetworkState, useNetworkState } from "expo-network"
 import { useEffect, useRef, useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
-export function NetworkNotificationBar() {
+export function NetworkStatusBar() {
   const networkState = useNetworkState()
   const previousNetworkState = useRef<NetworkState | undefined>()
 
@@ -28,14 +28,14 @@ export function NetworkNotificationBar() {
 
   const styles = useStyles()
 
-  if (isOpen)
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>
-          {networkState.isInternetReachable ? t("online") : t("offline")}
-        </Text>
-      </View>
-    )
+  // if (isOpen)
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>
+        {networkState.isInternetReachable ? t("online") : t("offline")}
+      </Text>
+    </View>
+  )
 }
 
 function useStyles() {

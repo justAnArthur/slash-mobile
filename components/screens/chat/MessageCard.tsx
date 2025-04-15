@@ -27,6 +27,7 @@ export const MessageCard = ({
 
   const { data: session } = authClient.useSession()
   const isMe = session?.user.id === senderId
+
   const formatDate = (date: string) =>
     new Date(date).toLocaleTimeString([], {
       hour: "2-digit",

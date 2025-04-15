@@ -154,7 +154,7 @@ const ChatScreen = () => {
     }
   }
 
-  if (chatLoading || messagesLoading) return <ThemedActivityIndicator />
+  if (chatLoading) return <ThemedActivityIndicator />
 
   if (chatError || messagesError || !chat || !messages)
     return <ThemedText>Error</ThemedText>
@@ -167,7 +167,12 @@ const ChatScreen = () => {
         </ThemedLink>
 
         <ThemedView
-          style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8
+          }}
         >
           {chat.type === "group" ? (
             <>
@@ -198,6 +203,8 @@ const ChatScreen = () => {
       </ThemedView>
 
       <ThemedView style={styles.content}>
+        {messagesLoading && <ThemedActivityIndicator size="small" />}
+
         <FlatList
           data={messages}
           keyExtractor={(item) => item.id}

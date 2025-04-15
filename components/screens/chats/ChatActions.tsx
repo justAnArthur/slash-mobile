@@ -48,7 +48,7 @@ export const ChatActions = ({
   }
 
   function handleChatPin() {
-    return backend.chats[chatId].post({ pinned: !pinned }).then(() => {
+    return backend.chats[chatId].put({ pinned: !pinned }).then(() => {
       setOpen(false)
       onPin?.()
     })
@@ -131,7 +131,9 @@ function useStyles() {
       borderRadius: 12,
       padding: 24,
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "row",
+      gap: 8,
+      justifyContent: "center",
       alignItems: "center",
       borderWidth: 1.5,
       borderBottomWidth: 0,

@@ -43,7 +43,6 @@ export function ChatsList({
     [query, page],
     {
       transform: (data, { prev }) => {
-        console.log("setHasMore", data?.length, pageSize)
         setHasMore(data?.length === pageSize)
         return (prev || []).concat(data?.data || [])
       },
@@ -72,9 +71,7 @@ export function ChatsList({
       })
     }
 
-    return () => {
-      setChats([])
-    }
+    return () => setChats([])
   }, [backendChats, setChats])
 
   function removeChatFromLocal(chatId: string) {
@@ -88,7 +85,7 @@ export function ChatsList({
 
   return (
     <ThemedView style={styles.container}>
-      {!loading ? (
+      {!loading && chats.length === (backendChats?.length || 0) ? (
         chats?.length && chats.length > 0 ? (
           <FlatList
             data={chats}

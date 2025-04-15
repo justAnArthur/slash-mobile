@@ -1,11 +1,12 @@
 import { Navigation } from "@/components/layout/Navigation"
-import { NetworkNotificationBar } from "@/components/layout/NetworkNotificationBar"
+import { NetworkStatusBar } from "@/components/layout/NetworkStatusBar"
 import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
 import { ThemedView } from "@/components/ui/ThemedView"
 import { authClient } from "@/lib/auth"
 import { WebSocketProvider } from "@/lib/services/WebSocketProvider"
 import { Redirect, Slot } from "expo-router"
 import { StyleSheet, View } from "react-native"
+import { HandlePushNotifications } from "@/lib/push/HandlePushNotifications"
 
 export default function AuthenticatedLayout() {
   const { data: session, isPending } = authClient.useSession()
@@ -18,7 +19,8 @@ export default function AuthenticatedLayout() {
   return (
     <WebSocketProvider>
       <View style={styles.container}>
-        <NetworkNotificationBar />
+        <HandlePushNotifications />
+        <NetworkStatusBar />
 
         <ThemedView style={styles.content}>
           <Slot />
