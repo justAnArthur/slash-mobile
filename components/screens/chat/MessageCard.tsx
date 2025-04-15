@@ -48,14 +48,11 @@ export const MessageCard = ({
   }
   return (
     <View
-      style={[
-        styles.container,
-        !!isMe ? styles.myMessage : styles.otherMessage
-      ]}
+      style={[styles.container, isMe ? styles.myMessage : styles.otherMessage]}
     >
       <View style={styles.messageContent}>
         <View style={styles.header}>
-          <ThemedText type="subtitle">{!!isMe ? "Me" : name}</ThemedText>
+          <ThemedText type="subtitle">{isMe ? "Me" : name}</ThemedText>
           <ThemedText type="extraSmall">{formatDate(date)}</ThemedText>
         </View>
 
