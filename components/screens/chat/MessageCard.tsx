@@ -94,7 +94,11 @@ function MessageAttachment(attachment: MessageAttachmentResponse) {
 
       return (
         <View key={attachment.id}>
-          <Image source={{ uri: url }} style={styles.image} />
+          <Image
+            source={{ uri: url }}
+            style={styles.image}
+            contentFit="contain"
+          />
         </View>
       )
     }
