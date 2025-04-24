@@ -197,7 +197,7 @@ const ChatScreen = () => {
             </>
           )}
         </ThemedView>
-        <ThemedLink href="/chats">
+        <ThemedLink href={`chat-info/${chatId}`}>
           <AntDesign name="infocirlceo" size={20} />
         </ThemedLink>
       </ThemedView>
