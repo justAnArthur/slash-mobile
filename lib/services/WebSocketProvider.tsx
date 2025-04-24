@@ -51,61 +51,81 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!session?.user.id) return
 
-    const wsUrl = `${WS_URL}/ws?id=${session.user.id}`
-    ws.current = new WebSocket(wsUrl)
+    let reconnectAttempts = 0
+    let reconnectTimeout: ReturnType<typeof setTimeout>
+    let shouldReconnect = true
 
-    ws.current.onopen = () => {
-      console.log("WebSocket Connected")
-    }
+    const connect = () => {
+      const wsUrl = `${WS_URL}/ws?id=${session.user.id}`
+      ws.current = new WebSocket(wsUrl)
 
-    ws.current.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
+      ws.current.onopen = () => {
+        console.log("WebSocket Connected")
+        reconnectAttempts = 0
+      }
 
-        if (data.type === "new_message") {
-          setMessages((prev) => ({
-            ...prev,
-            [data.chatId]: [...(prev[data.chatId] || []), data.message]
-          }))
+      ws.current.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data)
 
-          const chatIndex = chats.findIndex((chat) => chat.id === data.chatId)
-          if (chatIndex !== -1) {
-            setChats((prev) => {
-              const updatedChat = {
-                ...prev[chatIndex],
-                lastMessage: data.message
-              }
-              return [
-                ...prev.slice(0, chatIndex),
-                updatedChat,
-                ...prev.slice(chatIndex + 1)
-              ]
-            })
-          } else {
-            setNewChatId(data.chatId)
+          if (data.type === "new_message") {
+            setMessages((prev) => ({
+              ...prev,
+              [data.chatId]: [...(prev[data.chatId] || []), data.message]
+            }))
+
+            const chatIndex = chats.findIndex((chat) => chat.id === data.chatId)
+            if (chatIndex !== -1) {
+              setChats((prev) => {
+                const updatedChat = {
+                  ...prev[chatIndex],
+                  lastMessage: data.message
+                }
+                return [
+                  ...prev.slice(0, chatIndex),
+                  updatedChat,
+                  ...prev.slice(chatIndex + 1)
+                ]
+              })
+            } else {
+              setNewChatId(data.chatId)
+            }
           }
-        }
 
-        if (data.type === "new_chat") {
-          setChats((prev) => [...prev, data.chat])
+          if (data.type === "new_chat") {
+            setChats((prev) => [...prev, data.chat])
+          }
+
+          if (data.type === "delete_chat") {
+            setChats((prev) => prev.filter((el) => el.id !== data.chatId))
+          }
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error)
         }
-        if (data.type === "delete_chat") {
-          setChats((prev) => prev.filter((el) => el.id !== data.chatId))
+      }
+
+      ws.current.onerror = (error) => {
+        console.error("WebSocket Error:", error)
+      }
+
+      ws.current.onclose = () => {
+        console.log("WebSocket Disconnected")
+
+        if (shouldReconnect) {
+          const timeout = Math.min(10000, 1000 * 2 ** reconnectAttempts) // exponential backoff capped at 10s
+          reconnectAttempts++
+          reconnectTimeout = setTimeout(connect, timeout)
         }
-      } catch (error) {
-        console.error("Error parsing WebSocket message:", error)
       }
     }
 
-    ws.current.onerror = (error) => {
-      console.error("WebSocket Error:", error)
-    }
+    connect()
 
-    ws.current.onclose = () => {
-      console.log("WebSocket Disconnected")
+    return () => {
+      shouldReconnect = false
+      clearTimeout(reconnectTimeout)
+      ws.current?.close()
     }
-
-    return () => ws.current?.close()
   }, [session?.user.id])
 
   return (
