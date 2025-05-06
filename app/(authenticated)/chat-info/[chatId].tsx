@@ -1,12 +1,11 @@
 import { ThemedActivityIndicator } from "@/components/ui/ThemedActivityIndicator"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
-import { useTheme } from "@/lib/a11y/ThemeContext"
 import { useBackend } from "@/lib/services/backend/use"
 import { AntDesign } from "@expo/vector-icons"
 import type {
-  ChatResponse,
-  ChatInfoResponse
+  ChatInfoResponse,
+  ChatResponse
 } from "@slash/backend/src/api/chats/chats.api"
 import { useLocalSearchParams } from "expo-router"
 import { backend } from "@/lib/services/backend"
@@ -15,10 +14,14 @@ import { StyleSheet, View } from "react-native"
 import { ThemedLink } from "@/components/ui/ThemedLink"
 import { bufferToUri } from "@/components/screens/chat/bufferToUri"
 import ImageGrid from "@/components/screens/chat-info/ImageGrid"
+import { useI18nT } from "@/lib/i18n/Context"
 
 const ChatInfoScreen = () => {
   const styles = useStyles()
+  const t = useI18nT("screens.chatInfo")
+
   const { chatId } = useLocalSearchParams()
+
   const [attachmentUris, setAttachmentUris] = useState<
     { id: string; uri: string }[]
   >([])
@@ -51,7 +54,6 @@ const ChatInfoScreen = () => {
     }
   )
 
-  // Fetch attachment images when chatInfo is available
   useEffect(() => {
     if (chatInfo?.attachmentIds?.length) {
       const fetchAttachments = async () => {
@@ -84,7 +86,6 @@ const ChatInfoScreen = () => {
   if (chatError || infoError || !chat || !chatInfo)
     return <ThemedText>Error loading chat information</ThemedText>
 
-  // Map attachmentUris to match ImageGrid's expected prop format
   const images = attachmentUris.map(({ id, uri }) => ({
     id,
     image: uri
@@ -96,28 +97,33 @@ const ChatInfoScreen = () => {
         <ThemedLink href={`/chats/${chatId}`}>
           <AntDesign name="arrowleft" size={20} />
         </ThemedLink>
-        <ThemedText type="title">Chat Information</ThemedText>
+        <ThemedText type="title">{t("title")}</ThemedText>
         <ThemedView style={{ width: 20 }} />
       </ThemedView>
 
-      <ThemedText type="subtitle">Chat Details</ThemedText>
+      <ThemedText type="subtitle">{t("details")}</ThemedText>
       <ThemedView style={styles.infoSection}>
         <ThemedText>
-          Chat Name: {chat.name || chat.participants[0]?.name || "Unnamed Chat"}
+          {t("name")}:{" "}
+          {chat.name || chat.participants[0]?.name || "Unnamed Chat"}
         </ThemedText>
         <ThemedText>
-          Created: {new Date(chatInfo.createdAt).toLocaleDateString()}
+          {t("createdAt")}: {new Date(chatInfo.createdAt).toLocaleDateString()}
         </ThemedText>
-        <ThemedText>Total Messages: {chatInfo.totalMessages}</ThemedText>
-        <ThemedText>Attachments: {chatInfo.attachmentIds.length}</ThemedText>
+        <ThemedText>
+          {t("totalMessages")}: {chatInfo.totalMessages}
+        </ThemedText>
+        <ThemedText>
+          {t("totalAttachments")}: {chatInfo.attachmentIds.length}
+        </ThemedText>
       </ThemedView>
 
       <ThemedView style={styles.attachmentsSection}>
-        <ThemedText type="subtitle">Attachments</ThemedText>
+        <ThemedText type="subtitle">{t("attachments")}</ThemedText>
         {attachmentUris.length === 0 && chatInfo.attachmentIds.length > 0 ? (
           <ThemedActivityIndicator size="small" />
         ) : attachmentUris.length === 0 ? (
-          <ThemedText>No attachments found</ThemedText>
+          <ThemedText>{t("noAttachments")}</ThemedText>
         ) : (
           <View style={{ width: "100%" }}>
             <ImageGrid images={images} />
@@ -129,8 +135,6 @@ const ChatInfoScreen = () => {
 }
 
 function useStyles() {
-  const { theme } = useTheme()
-
   return StyleSheet.create({
     container: {
       flex: 1,

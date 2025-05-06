@@ -25,11 +25,13 @@ import type { ImagePickerAsset } from "expo-image-picker"
 import { useLocalSearchParams } from "expo-router"
 import React, { useState } from "react"
 import { FlatList, StyleSheet } from "react-native"
+import { ToastType, useToasts } from "@/components/layout/Toasts"
 
 const pageSize = 10
 
 const ChatScreen = () => {
   const styles = useStyles()
+  const toasts = useToasts()
 
   const { chatId } = useLocalSearchParams()
   const { messages: wsMessages } = useWebSocket()
@@ -150,6 +152,11 @@ const ChatScreen = () => {
 
       console.log({ response })
     } catch (error) {
+      toasts.addToast({
+        type: ToastType.ERROR,
+        title: "Error",
+        content: "An error occurred while sending the message."
+      })
       console.error(error)
     }
   }
@@ -197,7 +204,7 @@ const ChatScreen = () => {
             </>
           )}
         </ThemedView>
-        <ThemedLink href={`chat-info/${chatId}`}>
+        <ThemedLink href={`/chat-info/${chatId}`}>
           <AntDesign name="infocirlceo" size={20} />
         </ThemedLink>
       </ThemedView>

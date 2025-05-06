@@ -1,27 +1,26 @@
 import React from "react"
-import { FlatList, StyleSheet, View, Dimensions } from "react-native"
+import { Dimensions, FlatList, StyleSheet, View } from "react-native"
 import { Image } from "expo-image"
 
-// Get screen width for responsive column sizing
 const { width } = Dimensions.get("window")
-// Account for margins (5 + 5), borders (1 + 1), and parent padding
-const imageSize = (width - 10 - 6 - 10 - 80) / 3 // Subtract parent padding (5+5), borders (3*2), margins (5+5)
-const itemSize = imageSize + 10 + 2 // Margins (5+5) + borders (1+1)
 
-const ImageGrid = ({ images }) => {
-  const renderItem = ({ item }) => (
+const imageSize = (width - 10 - 6 - 10 - 80) / 3
+const itemSize = imageSize + 10 + 2
+
+export type ImageItem = { id: string; image: string }
+
+const ImageGrid = ({ images }: { images: ImageItem[] }) => {
+  const renderItem = ({ item }: { item: ImageItem }) => (
     <View style={styles.imageContainer}>
       <Image
         source={{ uri: item.image }}
         style={styles.image}
         contentFit="contain"
-        loading="lazy"
       />
     </View>
   )
 
-  // Optimize FlatList for fixed-size items
-  const getItemLayout = (data, index) => ({
+  const getItemLayout = (_: any, index: number) => ({
     length: itemSize,
     offset: itemSize * Math.floor(index / 3),
     index

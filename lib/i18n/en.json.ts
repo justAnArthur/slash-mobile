@@ -57,6 +57,16 @@ const en = {
         send: "Send"
       }
     },
+    chatInfo: {
+      title: "Chat information",
+      details: "Details",
+      name: "Name",
+      createdAt: "Created at",
+      totalMessages: "Total messages",
+      totalAttachments: "Total attachments",
+      attachments: "Attachments",
+      noAttachments: "No attachments"
+    },
     signIn: {
       title: "Sign In",
       email: "Email",

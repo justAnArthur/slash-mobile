@@ -1,4 +1,4 @@
-import type { Translations } from "@/lib/i18n/en.json"
+import type {Translations} from "@/lib/i18n/en.json"
 
 const sk: Translations = {
   welcome: "Ahoj",
@@ -58,6 +58,16 @@ const sk: Translations = {
         placeholder: "Napíšte správu",
         send: "Odoslať"
       }
+    },
+    chatInfo: {
+      title: "Informácie o chate",
+      details: "Detaily",
+      name: "Meno",
+      createdAt: "Vytvorené",
+      totalMessages: "Celkový počet správ",
+      totalAttachments: "Celkový počet príloh",
+      attachments: "Prilohy",
+      noAttachments: "Žiadne prílohy"
     },
     signIn: {
       title: "Prihlásiť sa",
