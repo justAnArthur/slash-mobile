@@ -42,9 +42,9 @@ export function ChatsList({
       }),
     [query, page],
     {
-      transform: (data, { prev }) => {
+      transform: (data) => {
         setHasMore(data?.length === pageSize)
-        return (prev || []).concat(data?.data || [])
+        return data?.data || []
       },
       haveTo: hasMore
     }
@@ -85,7 +85,7 @@ export function ChatsList({
 
   return (
     <ThemedView style={styles.container}>
-      {!loading && chats.length === (backendChats?.length || 0) ? (
+      {!loading ? (
         chats?.length && chats.length > 0 ? (
           <FlatList
             data={chats}

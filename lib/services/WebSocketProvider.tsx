@@ -95,10 +95,6 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
             })
           }
 
-          if (data.type === "new_chat") {
-            setChats((prev) => [...prev, data.chat])
-          }
-
           if (data.type === "delete_chat") {
             setChats((prev) => prev.filter((el) => el.id !== data.chatId))
           }
