@@ -95,11 +95,12 @@ function useStyles() {
 }
 
 function getTruncatedLastMessage(lastMessage: MessageResponse | null): string {
-  if (!lastMessage || !lastMessage.content) return "No messages yet"
-
+  console.log(lastMessage)
+  if (!lastMessage) return "No messages yet"
   if (lastMessage.type !== "TEXT") {
     return `${lastMessage.type.charAt(0)}${lastMessage.type.slice(1).toLowerCase()}`
   }
+  if (!lastMessage.content) return "No messages yet"
 
   if (lastMessage.content) {
     if (lastMessage.content.length > 60) {
