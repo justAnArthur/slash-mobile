@@ -2,6 +2,7 @@ import { Avatar } from "@/components/screens/common/Avatar"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { useTheme } from "@/lib/a11y/ThemeContext"
 import { authClient } from "@/lib/auth"
+import { useI18nT } from "@/lib/i18n/Context"
 import type { MessageResponse } from "@slash/backend/src/api/messages/messages.api"
 import type React from "react"
 import type { ReactNode } from "react"
@@ -95,12 +96,12 @@ function useStyles() {
 }
 
 function getTruncatedLastMessage(lastMessage: MessageResponse | null): string {
-  console.log(lastMessage)
-  if (!lastMessage) return "No messages yet"
+  const t = useI18nT("screens.chats.card")
+  if (!lastMessage) return t("no_messages")
   if (lastMessage.type !== "TEXT") {
-    return `${lastMessage.type.charAt(0)}${lastMessage.type.slice(1).toLowerCase()}`
+    return t(lastMessage.type)
   }
-  if (!lastMessage.content) return "No messages yet"
+  if (!lastMessage.content) return t("no_messages")
 
   if (lastMessage.content) {
     if (lastMessage.content.length > 60) {
@@ -110,5 +111,5 @@ function getTruncatedLastMessage(lastMessage: MessageResponse | null): string {
     return lastMessage.content
   }
 
-  return "No messages yet"
+  return t("no_messages")
 }

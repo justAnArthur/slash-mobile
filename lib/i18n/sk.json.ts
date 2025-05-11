@@ -1,4 +1,4 @@
-import type {Translations} from "@/lib/i18n/en.json"
+import type { Translations } from "@/lib/i18n/en.json"
 
 const sk: Translations = {
   welcome: "Ahoj",
@@ -57,6 +57,11 @@ const sk: Translations = {
       input: {
         placeholder: "Napíšte správu",
         send: "Odoslať"
+      },
+      card: {
+        no_messages: "Zatiaľ žiadne správy",
+        IMAGE: "Obrázok",
+        LOCATION: "Pozícia"
       }
     },
     chatInfo: {

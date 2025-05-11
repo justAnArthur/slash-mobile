@@ -55,6 +55,11 @@ const en = {
       input: {
         placeholder: "Type a message",
         send: "Send"
+      },
+      card: {
+        no_messages: "No messages yet",
+        IMAGE: "Image",
+        LOCATION: "Location"
       }
     },
     chatInfo: {
