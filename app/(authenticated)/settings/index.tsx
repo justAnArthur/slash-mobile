@@ -14,6 +14,7 @@ import { ScrollView, StyleSheet } from "react-native"
 
 export default function SettingsModal() {
   const t = useI18nT("screens.settings")
+  const { data: session, isPending } = authClient.useSession()
 
   return (
     <ThemedView style={styles.content}>
@@ -23,6 +24,16 @@ export default function SettingsModal() {
         </ThemedView>
 
         <Collapsible title="Profile">
+          {isPending || !session ? (
+            <ThemedText>Loading...</ThemedText>
+          ) : (
+            <ThemedView style={styles.profileInfo}>
+              <ThemedText type="defaultSemiBold">Username:</ThemedText>
+              <ThemedText>{session.user?.name || "N/A"}</ThemedText>
+              <ThemedText type="defaultSemiBold">Email:</ThemedText>
+              <ThemedText>{session.user?.email || "N/A"}</ThemedText>
+            </ThemedView>
+          )}
           <UpdateUserInfo />
         </Collapsible>
         <Collapsible title="2-FA">
@@ -43,11 +54,8 @@ export default function SettingsModal() {
 
 function LogOutButton() {
   const router = useRouter()
-
   const { data: session, isPending } = authClient.useSession()
-
   const t = useI18nT("screens.settings")
-
   const [loading, setLoading] = useState(false)
 
   async function handleSignOut() {
@@ -55,7 +63,6 @@ function LogOutButton() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          // setLoading(false)
           router.replace("/sign-in")
         },
         onError: () => {
@@ -87,6 +94,10 @@ const styles = StyleSheet.create({
     marginBottom: 50
   },
   header: {
+    marginBottom: 16
+  },
+  profileInfo: {
+    gap: 8,
     marginBottom: 16
   }
 })
