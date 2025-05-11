@@ -74,22 +74,25 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
               [data.chatId]: [...(prev[data.chatId] || []), data.message]
             }))
 
-            const chatIndex = chats.findIndex((chat) => chat.id === data.chatId)
-            if (chatIndex !== -1) {
-              setChats((prev) => {
+            setChats((prevChats) => {
+              const chatIndex = prevChats.findIndex(
+                (chat) => chat.id === data.chatId
+              )
+              if (chatIndex !== -1) {
                 const updatedChat = {
-                  ...prev[chatIndex],
+                  ...prevChats[chatIndex],
                   lastMessage: data.message
                 }
                 return [
-                  ...prev.slice(0, chatIndex),
+                  ...prevChats.slice(0, chatIndex),
                   updatedChat,
-                  ...prev.slice(chatIndex + 1)
+                  ...prevChats.slice(chatIndex + 1)
                 ]
-              })
-            } else {
-              setNewChatId(data.chatId)
-            }
+              } else {
+                setNewChatId(data.chatId)
+                return prevChats // Return unchanged state if chatId not found
+              }
+            })
           }
 
           if (data.type === "new_chat") {
