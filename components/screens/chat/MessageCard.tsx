@@ -10,7 +10,7 @@ import type {
 } from "@slash/backend/src/api/messages/messages.api"
 import { Image } from "expo-image"
 import React from "react"
-import { StyleSheet, View } from "react-native"
+import { Linking, Pressable, StyleSheet, View } from "react-native"
 import { Avatar } from "../common/Avatar"
 import { authClient } from "@/lib/auth"
 import { ThemedView } from "@/components/ui/ThemedView"
@@ -71,13 +71,24 @@ export const MessageCard = ({
 function MessageAttachment(attachment: MessageAttachmentResponse) {
   const styles = useStyles()
 
-  if (attachment.JSON)
+  if (attachment.JSON) {
+    const locationData = JSON.parse(attachment.JSON)
+    const { latitude, longitude } = locationData
+    const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`
+
     return (
-      <View key={attachment.id} style={styles.location}>
-        <ThemedText type="small">{attachment.JSON}</ThemedText>
+      <Pressable
+        key={attachment.id}
+        style={styles.location}
+        onPress={() => Linking.openURL(googleMapsUrl)}
+      >
+        <ThemedText type="small" style={styles.locationText}>
+          Location: Latitude: {latitude}, Longitude: {longitude}
+        </ThemedText>
         <AntDesign name="pushpin" size={16} />
-      </View>
+      </Pressable>
     )
+  }
 
   if (attachment.IMAGEFileId) {
     const { data } = useBackend<ArrayBuffer>(
@@ -141,7 +152,15 @@ function useStyles() {
       width: "100%",
       aspectRatio: 1
     },
-    location: {},
+    location: {
+      marginTop: 8,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4
+    },
+    locationText: {
+      color: "#1E90FF" // Use a theme color or default to a blue shade
+    },
     systemMessage: {
       padding: 10,
       borderRadius: 12,
