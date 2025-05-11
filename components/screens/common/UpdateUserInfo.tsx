@@ -19,6 +19,7 @@ import { ThemedButton, useButtonStyles } from "@/components/ui/ThemedButton"
 import { backend } from "@/lib/services/backend"
 import { bufferToUri } from "@/components/screens/chat/bufferToUri"
 import { useI18nT } from "@/lib/i18n/Context"
+import { ToastType, useToasts } from "@/components/layout/Toasts"
 
 type UpdateUserInfoProps = {
   onSuccess?: () => void
@@ -30,6 +31,8 @@ export const UpdateUserInfo = ({ onSuccess }: UpdateUserInfoProps) => {
   const styles = useStyles()
   const [bio, setBio] = useState("")
   const [avatarUri, setAvatarUri] = useState<string | undefined>(undefined)
+
+  const toasts = useToasts()
 
   const {
     data: userInfo,
@@ -106,6 +109,11 @@ export const UpdateUserInfo = ({ onSuccess }: UpdateUserInfoProps) => {
         onSuccess()
       }
     } catch (error) {
+      toasts.addToast({
+        type: ToastType.ERROR,
+        title: "Error",
+        content: t("errors.updateProfileFailed")
+      })
       console.error(t("errors.updateProfileFailed"), error)
     }
   }
