@@ -7,7 +7,6 @@ import { WebSocketProvider } from "@/lib/services/WebSocketProvider"
 import { Redirect, Slot } from "expo-router"
 import { StyleSheet, View } from "react-native"
 import { HandlePushNotifications } from "@/lib/push/HandlePushNotifications"
-import { ToastProvider } from "@/components/layout/Toasts"
 
 export default function AuthenticatedLayout() {
   const { data: session, isPending } = authClient.useSession()
@@ -18,19 +17,17 @@ export default function AuthenticatedLayout() {
   if (!session) return <Redirect href="/sign-in" />
 
   return (
-    <ToastProvider>
-      <WebSocketProvider>
-        <View style={styles.container}>
-          <HandlePushNotifications />
-          <NetworkStatusBar />
+    <WebSocketProvider>
+      <View style={styles.container}>
+        <HandlePushNotifications />
+        <NetworkStatusBar />
 
-          <ThemedView style={styles.content}>
-            <Slot />
-            <Navigation />
-          </ThemedView>
-        </View>
-      </WebSocketProvider>
-    </ToastProvider>
+        <ThemedView style={styles.content}>
+          <Slot />
+          <Navigation />
+        </ThemedView>
+      </View>
+    </WebSocketProvider>
   )
 }
 
