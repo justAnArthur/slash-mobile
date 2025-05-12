@@ -32,6 +32,8 @@ export const ChatActions = ({
   const t = useI18nT("screens.chats.actions")
   const styles = useStyles()
 
+  const [state, setState] = useState({ muted, pinned })
+
   const [open, setOpen] = useState(false)
   const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null)
 
@@ -50,15 +52,23 @@ export const ChatActions = ({
   }
 
   async function handleChatPin() {
-    return backend.chats[chatId].put({ pinned: !pinned }).then(() => {
+    return backend.chats[chatId].put({ pinned: !state.pinned }).then(() => {
       setOpen(false)
+      setState((_state) => {
+        _state.pinned = !_state.pinned
+        return _state
+      })
       onPin?.()
     })
   }
 
   async function handleChatMute() {
-    return backend.chats[chatId].put({ muted: !muted }).then(() => {
+    return backend.chats[chatId].put({ muted: !state.muted }).then(() => {
       setOpen(false)
+      setState((_state) => {
+        _state.muted = !_state.muted
+        return _state
+      })
     })
   }
 
@@ -95,7 +105,10 @@ export const ChatActions = ({
           >
             <ThemedButton title={t("delete")} onPress={handleChatDelete} />
             <ThemedButton title={t("pin")} onPress={handleChatPin} />
-            <ThemedButton title={t("mute")} onPress={handleChatMute} />
+            <ThemedButton
+              title={t(state.muted ? "unmute" : "mute")}
+              onPress={handleChatMute}
+            />
           </ThemedView>
         </View>
       </Modal>

@@ -49,7 +49,8 @@ const en = {
       actions: {
         delete: "Delete",
         pin: "Toggle Pin",
-        mute: "Toggle Mute"
+        mute: "Mute",
+        unmute: "Unmute"
       },
       noChats: "No chats",
       noPinnedChats: "No pinned chats",

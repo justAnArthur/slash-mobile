@@ -23,7 +23,8 @@ import type {
 } from "@slash/backend/src/api/messages/messages.api"
 import type { ImagePickerAsset } from "expo-image-picker"
 import { useLocalSearchParams } from "expo-router"
-import React, { useState } from "react"
+import type React from "react"
+import { useState } from "react"
 import { FlatList, StyleSheet } from "react-native"
 import { ToastType, useToasts } from "@/components/layout/Toasts"
 
@@ -52,6 +53,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ chatId: propChatId }) => {
       backend.chats[effectiveChatId].get(),
     [effectiveChatId],
     {
+      key: `chats.${effectiveChatId}.get`,
       transform: (response) => response.data?.chat
     }
   )
@@ -74,6 +76,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ chatId: propChatId }) => {
       }),
     [page, effectiveChatId],
     {
+      key: `messages.${effectiveChatId}.get.${page}${pageSize}`,
       transform: (response: { data: PaginatedMessageResponse }, params) => {
         setHasMore(response.data?.pagination?.totalPages > page)
         return (params?.prev || []).concat(response.data?.messages || [])
@@ -147,19 +150,14 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ chatId: propChatId }) => {
     formData.append("type", handledUploadType)
 
     try {
-      const response = await fetch(
-        `${BACKEND_URL!}/messages/${effectiveChatId}`,
-        {
-          method: "POST",
-          body: formData,
-          headers: {
-            Cookie: authClient.getCookie()
-          },
-          credentials: "include"
-        }
-      )
-
-      console.log({ response })
+      await fetch(`${BACKEND_URL!}/messages/${effectiveChatId}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Cookie: authClient.getCookie()
+        },
+        credentials: "include"
+      })
     } catch (error) {
       toasts.addToast({
         type: ToastType.ERROR,
@@ -172,8 +170,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ chatId: propChatId }) => {
 
   if (chatLoading) return <ThemedActivityIndicator />
 
-  if (chatError || messagesError || !chat || !messages || !effectiveChatId)
+  if (!chat || !messages || !effectiveChatId) {
+    alert(JSON.stringify({ chat, messages, effectiveChatId }))
     return <ThemedText>Error</ThemedText>
+  }
 
   return (
     <ThemedView style={styles.content}>
