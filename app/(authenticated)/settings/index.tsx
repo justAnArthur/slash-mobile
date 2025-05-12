@@ -11,7 +11,7 @@ import { useI18nT } from "@/lib/i18n/Context"
 import { LanguageSwitcher } from "@/lib/i18n/LanguageSwitcher"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { ScrollView, StyleSheet } from "react-native"
+import { ScrollView, StyleSheet, View } from "react-native"
 
 export default function SettingsModal() {
   const t = useI18nT("screens.settings")
@@ -28,12 +28,12 @@ export default function SettingsModal() {
           {isPending || !session ? (
             <ThemedText>Loading...</ThemedText>
           ) : (
-            <ThemedView style={styles.profileInfo}>
+            <View style={styles.profileInfo}>
               <ThemedText type="defaultSemiBold">Username:</ThemedText>
               <ThemedText>{session.user?.name || "N/A"}</ThemedText>
               <ThemedText type="defaultSemiBold">Email:</ThemedText>
               <ThemedText>{session.user?.email || "N/A"}</ThemedText>
-            </ThemedView>
+            </View>
           )}
           <UpdateUserInfo />
         </Collapsible>
@@ -43,7 +43,7 @@ export default function SettingsModal() {
         <Collapsible title="i18n">
           <LanguageSwitcher />
         </Collapsible>
-        <Collapsible title="i11y">
+        <Collapsible title="a11y">
           <ThemeSwitcher />
           <ContrastSwitcher />
         </Collapsible>
