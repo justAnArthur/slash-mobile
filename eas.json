@@ -15,10 +15,13 @@
       "android": {
         "buildType": "apk"
       },
+<<<<<<< HEAD
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release"
       },
+=======
+>>>>>>> 22703bd7fa6ddb9c5f3446763a1797c3b2ec69d8
       "env": {
         "EXPO_PUBLIC_BACKEND_URL": "https://slash-backend.justadomainname.dev"
       }
