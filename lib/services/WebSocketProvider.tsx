@@ -62,6 +62,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("Offline: Skipping WebSocket connection attempt")
         return
       }
+      console.log("Trying to connect: " + Date.now())
 
       const wsUrl = `${WS_URL}/ws?id=${session.user.id}`
       ws.current = new WebSocket(wsUrl)
@@ -112,17 +113,11 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
       ws.current.onerror = (error) => {
         console.error("WebSocket Error:", error)
-
-        if (shouldReconnect && networkState.isInternetReachable) {
-          const timeout = Math.min(10000, 1000 * 2 ** reconnectAttempts)
-          reconnectAttempts++
-          reconnectTimeout = setTimeout(connect, timeout)
-        }
       }
 
       ws.current.onclose = () => {
         console.log("WebSocket Disconnected")
-        // Only schedule reconnection if online
+
         if (shouldReconnect && networkState.isInternetReachable) {
           const timeout = Math.min(10000, 1000 * 2 ** reconnectAttempts)
           reconnectAttempts++
