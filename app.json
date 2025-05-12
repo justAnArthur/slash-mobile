@@ -9,15 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-<<<<<<< HEAD
       "supportsTablet": true,
       "bundleIdentifier": "com.justanarthur.slashmobile",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
-=======
-      "supportsTablet": true
->>>>>>> 22703bd7fa6ddb9c5f3446763a1797c3b2ec69d8
     },
     "android": {
       "adaptiveIcon": {
@@ -48,23 +44,13 @@
           "dark": {
             "image": "./assets/meta/splash-icon-dark.png",
             "backgroundColor": "#222222"
-<<<<<<< HEAD
           }
-=======
-          },
->>>>>>> 22703bd7fa6ddb9c5f3446763a1797c3b2ec69d8
         }
       ],
       [
         "expo-font",
         {
-<<<<<<< HEAD
-          "fonts": [
-            "./assets/fonts/JetBrainsMono/JetBrainsMonoNL-Regular.ttf"
-          ]
-=======
           "fonts": ["./assets/fonts/JetBrainsMono/JetBrainsMonoNL-Regular.ttf"]
->>>>>>> 22703bd7fa6ddb9c5f3446763a1797c3b2ec69d8
         }
       ],
       "expo-localization",
