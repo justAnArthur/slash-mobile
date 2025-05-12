@@ -29,12 +29,18 @@ import { ToastType, useToasts } from "@/components/layout/Toasts"
 
 const pageSize = 10
 
-const ChatScreen = () => {
+interface ChatScreenProps {
+  chatId?: string
+}
+
+const ChatScreen: React.FC<ChatScreenProps> = ({ chatId: propChatId }) => {
   const styles = useStyles()
   const toasts = useToasts()
-
-  const { chatId } = useLocalSearchParams()
+  const { chatId: paramChatId } = useLocalSearchParams()
   const { messages: wsMessages } = useWebSocket()
+
+  // Use propChatId if provided, otherwise fall back to paramChatId
+  const effectiveChatId = propChatId || paramChatId
 
   const {
     data: chat,
@@ -43,8 +49,8 @@ const ChatScreen = () => {
   } = useBackend<ChatResponse>(
     () =>
       // @ts-ignore
-      backend.chats[chatId].get(),
-    [chatId],
+      backend.chats[effectiveChatId].get(),
+    [effectiveChatId],
     {
       transform: (response) => response.data?.chat
     }
@@ -60,13 +66,13 @@ const ChatScreen = () => {
   } = useBackend<MessageResponse[]>(
     () =>
       // @ts-ignore
-      backend.messages[chatId].get({
+      backend.messages[effectiveChatId].get({
         query: {
           page,
           pageSize
         }
       }),
-    [page],
+    [page, effectiveChatId],
     {
       transform: (response: { data: PaginatedMessageResponse }, params) => {
         setHasMore(response.data?.pagination?.totalPages > page)
@@ -79,7 +85,7 @@ const ChatScreen = () => {
   const seenMessageIds = new Set()
   // @ts-ignore
   const messages = [
-    ...(wsMessages[chatId as string] || []),
+    ...(wsMessages[effectiveChatId as string] || []),
     ...(backendMessages || [])
   ]
     .filter((message) => {
@@ -141,14 +147,17 @@ const ChatScreen = () => {
     formData.append("type", handledUploadType)
 
     try {
-      const response = await fetch(`${BACKEND_URL!}/messages/${chatId}`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Cookie: authClient.getCookie()
-        },
-        credentials: "include"
-      })
+      const response = await fetch(
+        `${BACKEND_URL!}/messages/${effectiveChatId}`,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            Cookie: authClient.getCookie()
+          },
+          credentials: "include"
+        }
+      )
 
       console.log({ response })
     } catch (error) {
@@ -163,7 +172,7 @@ const ChatScreen = () => {
 
   if (chatLoading) return <ThemedActivityIndicator />
 
-  if (chatError || messagesError || !chat || !messages)
+  if (chatError || messagesError || !chat || !messages || !effectiveChatId)
     return <ThemedText>Error</ThemedText>
 
   return (
@@ -204,7 +213,7 @@ const ChatScreen = () => {
             </>
           )}
         </ThemedView>
-        <ThemedLink href={`/chat-info/${chatId}`}>
+        <ThemedLink href={`/chat-info/${effectiveChatId}`}>
           <AntDesign name="infocirlceo" size={20} />
         </ThemedLink>
       </ThemedView>
