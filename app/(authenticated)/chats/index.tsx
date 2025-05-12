@@ -5,6 +5,7 @@ import { useI18nT } from "@/lib/i18n/Context"
 import { StyleSheet, Dimensions, useWindowDimensions } from "react-native"
 import React, { useState } from "react"
 import ChatScreen from "./[chatId]"
+import { router } from "expo-router"
 
 export default function ChatsPage() {
   const t = useI18nT("screens.chats")
