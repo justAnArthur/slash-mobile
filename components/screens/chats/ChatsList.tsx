@@ -14,12 +14,14 @@ type ChatsListProps = {
   pageSize?: number
   query?: Record<string, any>
   fallbackChildren?: ReactNode
+  onChatSelect: () => void
 }
 
 export function ChatsList({
   pageSize = 10,
   query,
-  fallbackChildren
+  fallbackChildren,
+  onChatSelect
 }: ChatsListProps) {
   const router = useRouter()
 
@@ -78,11 +80,6 @@ export function ChatsList({
     setChats((prev) => prev.filter((chat) => chat.id !== chatId))
   }
 
-  function openChat(userId: string) {
-    // @ts-ignore
-    router.push(`/chats/${userId}`)
-  }
-
   return (
     <ThemedView style={styles.container}>
       {!loading ? (
@@ -95,7 +92,7 @@ export function ChatsList({
                 type={chatResponse.type}
                 username={chatResponse.name}
                 lastMessage={chatResponse.lastMessage}
-                onPress={() => openChat(chatResponse.id)}
+                onPress={() => onChatSelect(chatResponse.id)}
                 actionsChildren={
                   <ChatActions
                     chatId={chatResponse.id}
