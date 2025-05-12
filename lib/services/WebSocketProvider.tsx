@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react"
 import { backend } from "./backend"
 import { WS_URL } from "./backend/url"
 import { useBackend } from "./backend/use"
+import { useNetworkState } from "expo-network"
 
 type WebSocketContextType = {
   messages: Record<string, MessageResponse[]>
@@ -24,7 +25,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const { data: session } = authClient.useSession()
-
+  const networkState = useNetworkState()
   const ws = useRef<WebSocket | null>(null)
 
   const [chats, setChats] = useState<ChatListResponse[]>([])
@@ -56,6 +57,12 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
     let shouldReconnect = true
 
     const connect = () => {
+      // Only attempt to connect if online
+      if (!networkState.isInternetReachable) {
+        console.log("Offline: Skipping WebSocket connection attempt")
+        return
+      }
+
       const wsUrl = `${WS_URL}/ws?id=${session.user.id}`
       ws.current = new WebSocket(wsUrl)
 
@@ -90,7 +97,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
                 ]
               } else {
                 setNewChatId(data.chatId)
-                return prevChats // Return unchanged state if chatId not found
+                return prevChats
               }
             })
           }
@@ -105,27 +112,35 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
       ws.current.onerror = (error) => {
         console.error("WebSocket Error:", error)
+
+        if (shouldReconnect && networkState.isInternetReachable) {
+          const timeout = Math.min(10000, 1000 * 2 ** reconnectAttempts)
+          reconnectAttempts++
+          reconnectTimeout = setTimeout(connect, timeout)
+        }
       }
 
       ws.current.onclose = () => {
         console.log("WebSocket Disconnected")
-
-        if (shouldReconnect) {
-          const timeout = Math.min(10000, 1000 * 2 ** reconnectAttempts) // exponential backoff capped at 10s
+        // Only schedule reconnection if online
+        if (shouldReconnect && networkState.isInternetReachable) {
+          const timeout = Math.min(10000, 1000 * 2 ** reconnectAttempts)
           reconnectAttempts++
           reconnectTimeout = setTimeout(connect, timeout)
         }
       }
     }
 
+    // Initial connection attempt
     connect()
 
+    // Cleanup on unmount or session change
     return () => {
       shouldReconnect = false
       clearTimeout(reconnectTimeout)
       ws.current?.close()
     }
-  }, [session?.user.id])
+  }, [session?.user.id, networkState.isInternetReachable])
 
   return (
     <WebSocketContext.Provider
