@@ -26,15 +26,23 @@ export default function SignUpScreen() {
 
   const handleSignUp = async () => {
     setLoading(true)
-
+    if (!email || !name || !password) {
+      setError(t("fill_all_fields"))
+      return
+    }
     const res = await authClient.signUp.email({
       email,
       password,
       name
     })
 
-    if (res.error) setError(JSON.stringify(res.error))
-    else router.replace("/sign-up/additional-info")
+    if (res.error) {
+      if (["INVALID_EMAIL", "PASSWORD_TOO_SHORT"].includes(res.error.code)) {
+        setError(t(res.error.code))
+      } else {
+        setError(t("error"))
+      }
+    } else router.replace("/sign-up/additional-info")
 
     setLoading(false)
   }
@@ -74,7 +82,7 @@ export default function SignUpScreen() {
 
         {error && (
           <ThemedText>
-            {t("error")}
+            {error}
             {/*{": "}*/}
             {/*{error}*/}
           </ThemedText>

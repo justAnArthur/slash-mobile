@@ -89,7 +89,10 @@ const en = {
       submit: "Submit",
       haveAccount: "Already have an account?",
       signIn: "Sign In",
-      error: "There was an error signing up"
+      error: "There was an error signing up",
+      INVALID_EMAIL: "Email is invalid",
+      PASSWORD_TOO_SHORT: "Password is too short",
+      fill_all_fields: "Please fill all fields"
     },
     settings: {
       title: "Settings",

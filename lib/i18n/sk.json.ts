@@ -91,7 +91,10 @@ const sk: Translations = {
       submit: "Odoslať",
       haveAccount: "Už máte účet?",
       signIn: "Prihlásiť sa",
-      error: "Pri registrácii došlo k chybe"
+      error: "Pri registrácii došlo k chybe",
+      INVALID_EMAIL: "Email je neplatný",
+      PASSWORD_TOO_SHORT: "Heslo je príliš krátke",
+      fill_all_fields: "Prosím, vyplňte všetky polia"
     },
     settings: {
       title: "Nastavenia",
