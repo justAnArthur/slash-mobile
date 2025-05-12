@@ -18,6 +18,7 @@ type ChatActionsProps = {
   chatId: string
   onDelete?: () => void
   pinned?: boolean
+  muted?: boolean
   onPin?: () => void
 }
 
@@ -25,6 +26,7 @@ export const ChatActions = ({
   chatId,
   onDelete,
   pinned,
+  muted,
   onPin
 }: ChatActionsProps) => {
   const t = useI18nT("screens.chats.actions")
@@ -41,16 +43,22 @@ export const ChatActions = ({
   }
   _deleteChat.displayName = "Delete chat"
 
-  function handleChatDelete() {
+  async function handleChatDelete() {
     const func = () => _deleteChat(chatId)
     func.displayName = _deleteChat.displayName
     if (!confirmAction) setConfirmAction(() => func)
   }
 
-  function handleChatPin() {
+  async function handleChatPin() {
     return backend.chats[chatId].put({ pinned: !pinned }).then(() => {
       setOpen(false)
       onPin?.()
+    })
+  }
+
+  async function handleChatMute() {
+    return backend.chats[chatId].put({ muted: !muted }).then(() => {
+      setOpen(false)
     })
   }
 
@@ -87,6 +95,7 @@ export const ChatActions = ({
           >
             <ThemedButton title={t("delete")} onPress={handleChatDelete} />
             <ThemedButton title={t("pin")} onPress={handleChatPin} />
+            <ThemedButton title={t("mute")} onPress={handleChatMute} />
           </ThemedView>
         </View>
       </Modal>

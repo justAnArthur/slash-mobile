@@ -2,10 +2,10 @@ import { ChatsList } from "@/components/screens/chats/ChatsList"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
 import { useI18nT } from "@/lib/i18n/Context"
-import { StyleSheet, Dimensions, useWindowDimensions } from "react-native"
-import React, { useState } from "react"
-import ChatScreen from "./[chatId]"
 import { router } from "expo-router"
+import React, { useState } from "react"
+import { Dimensions, StyleSheet, useWindowDimensions } from "react-native"
+import ChatScreen from "./[chatId]"
 
 export default function ChatsPage() {
   const t = useI18nT("screens.chats")
@@ -17,6 +17,7 @@ export default function ChatsPage() {
     // @ts-ignore
     router.push(`/chats/${chatId}`)
   }
+
   return (
     <ThemedView style={styles.container}>
       {isDesktopView ? (

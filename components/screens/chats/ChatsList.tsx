@@ -97,6 +97,7 @@ export function ChatsList({
                   <ChatActions
                     chatId={chatResponse.id}
                     pinned={!!query?.pinned}
+                    muted={!!chatResponse.muted}
                     onDelete={() => removeChatFromLocal(chatResponse.id)}
                     onPin={() => router.push("/")}
                   />
