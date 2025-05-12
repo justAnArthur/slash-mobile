@@ -44,9 +44,13 @@ export function ChatsList({
       }),
     [query, page],
     {
+      key: `backend.chats.get${JSON.stringify(query)}-${page}-${pageSize}`,
       transform: (data) => {
         setHasMore(data?.length === pageSize)
-        return data?.data || []
+        return [...(backendChats || []), ...(data?.data || [])].filter(
+          (chat, index, self) =>
+            index === self.findIndex((c) => c.id === chat.id)
+        )
       },
       haveTo: hasMore
     }

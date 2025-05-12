@@ -68,6 +68,7 @@ export const HandlePushNotifications = () => {
     }
   }, [])
 
+  return null
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Expo token: {pushToken}</Text>

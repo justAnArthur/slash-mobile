@@ -36,6 +36,7 @@ const ChatInfoScreen = () => {
       backend.chats[chatId].get(),
     [chatId],
     {
+      key: `chats.${chatId}.get`,
       transform: (response) => response.data?.chat
     }
   )
@@ -50,6 +51,7 @@ const ChatInfoScreen = () => {
       backend.chats[chatId].info.get(),
     [chatId],
     {
+      key: `chats.${chatId}.info.get`,
       transform: (response) => response.data
     }
   )

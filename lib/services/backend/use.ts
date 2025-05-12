@@ -1,11 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { useNetworkState } from "expo-network"
-import { type DependencyList, useEffect, useMemo, useState } from "react"
+import { type DependencyList, useEffect, useState } from "react"
+import { state } from "@/lib/services/backend/state"
 
 type useBackend = <T>(
   promiseDataFunction: () => Promise<any>,
   deps?: DependencyList,
   options?: {
+    key?: string
     transform?: (data: any, params: { prev: T | null }) => any
     haveTo?: boolean
   }
@@ -20,56 +20,33 @@ export const useBackend: useBackend = (
   deps = [],
   options = {}
 ) => {
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const [data, setData] = useState(null)
-
-  const networkState = useNetworkState()
-  const cacheKey = useMemo(
-    () => String(hash(promiseDataFunction.toString())),
-    deps
+  const [data, setData] = useState(() =>
+    options.key ? state[options.key] : undefined
   )
 
-  async function fetchFromNetwork() {
-    const res = await promiseDataFunction()
-
-    await AsyncStorage.setItem(cacheKey, JSON.stringify(res))
-
-    const _data = options.transform
-      ? options.transform(res, { prev: data })
-      : res
-
-    setData(_data)
-  }
-
-  async function fetchFromCache() {
-    const res = await AsyncStorage.getItem(cacheKey)
-
-    const parsed = res && JSON.parse(res)
-    const _data = options.transform
-      ? options.transform(parsed, { prev: data })
-      : parsed
-
-    setData(_data)
-  }
-
-  const networkDependency = networkState?.isInternetReachable ?? true
+  const [loading, setLoading] = useState(!data)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     if (options.haveTo !== undefined && !options.haveTo) return
 
-    setLoading(true)
+    if (!data) setLoading(true)
+    ;(async () => {
+      let _data: any
+      try {
+        const res = await promiseDataFunction()
 
-    const shouldFetchFromNetwork = networkState?.isInternetReachable ?? true
-    ;(shouldFetchFromNetwork ? fetchFromNetwork() : fetchFromCache())
-      .catch((err) => {
-        console.warn(err)
-        setError(err)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [...deps, networkDependency])
+        if (!res) return
+
+        _data = options.transform ? options.transform(res, { prev: data }) : res
+
+        if (options.key) state[options.key] = _data
+        setData(_data)
+      } catch (error) {}
+
+      setLoading(false)
+    })()
+  }, deps)
 
   return { loading, error, data }
 }

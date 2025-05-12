@@ -6,7 +6,6 @@ import type React from "react"
 import { Image, StyleSheet, View } from "react-native"
 import { bufferToUri } from "../chat/bufferToUri"
 import { useBackend } from "@/lib/services/backend/use"
-import { useState } from "react"
 
 interface AvatarProps {
   avatar: string | null // Avatar can be a string (URL) or null
@@ -16,19 +15,21 @@ interface AvatarProps {
 export const Avatar: React.FC<AvatarProps> = ({ avatar, username }) => {
   const uri = `${BACKEND_URL!}/files/${avatar}`
 
-  const [avatarUri, setAvatarUri] = useState<string | undefined>(undefined)
-  const { loading: imageLoading } = useBackend<ArrayBuffer>(
+  const {
+    data: avatarUri,
+    loading: imageLoading,
+    error
+  } = useBackend<string | undefined>(
     () => {
       if (!avatar) return Promise.resolve(null)
       return backend.files[avatar].get()
     },
     [avatar],
     {
+      key: `avatar.${avatar}`,
       transform: (response) => {
         if (response.data) {
-          const url = bufferToUri(response.data)
-          setAvatarUri(url)
-          return url
+          return bufferToUri(response.data)
         }
       }
     }

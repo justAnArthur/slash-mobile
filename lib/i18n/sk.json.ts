@@ -50,7 +50,9 @@ const sk: Translations = {
     chats: {
       actions: {
         delete: "Vymazať",
-        pin: "Pripnúť"
+        pin: "Pripnúť",
+        mute: "Stlmiť",
+        unmute: "Zrušiť stlmenie"
       },
       noChats: "Žiadne chaty",
       noPinnedChats: "Žiadne pripnuté chaty",

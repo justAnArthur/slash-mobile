@@ -105,14 +105,10 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
           if (data.type === "delete_chat") {
             setChats((prev) => prev.filter((el) => el.id !== data.chatId))
           }
-        } catch (error) {
-          console.error("Error parsing WebSocket message:", error)
-        }
+        } catch (error) {}
       }
 
       ws.current.onerror = (error) => {
-        console.error("WebSocket Error:", error)
-
         if (shouldReconnect && networkState.isInternetReachable) {
           const timeout = Math.min(10000, 1000 * 2 ** reconnectAttempts)
           reconnectAttempts++

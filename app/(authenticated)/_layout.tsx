@@ -20,7 +20,7 @@ export default function AuthenticatedLayout() {
     <WebSocketProvider>
       <View style={styles.container}>
         <HandlePushNotifications />
-        <NetworkStatusBar />
+        {/*<NetworkStatusBar />*/}
 
         <ThemedView style={styles.content}>
           <Slot />
