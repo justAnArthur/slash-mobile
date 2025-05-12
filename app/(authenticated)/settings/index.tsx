@@ -4,6 +4,7 @@ import TOTPSetup from "@/components/screens/totp/TOTPSetup"
 import { ThemedButton } from "@/components/ui/ThemedButton"
 import { ThemedText } from "@/components/ui/ThemedText"
 import { ThemedView } from "@/components/ui/ThemedView"
+import { ContrastSwitcher } from "@/lib/a11y/ContrastSwitcher"
 import { ThemeSwitcher } from "@/lib/a11y/ThemeSwitcher"
 import { authClient } from "@/lib/auth"
 import { useI18nT } from "@/lib/i18n/Context"
@@ -44,7 +45,7 @@ export default function SettingsModal() {
         </Collapsible>
         <Collapsible title="i11y">
           <ThemeSwitcher />
-          {/*<ContrastSwitcher />*/}
+          <ContrastSwitcher />
         </Collapsible>
         <LogOutButton />
       </ScrollView>

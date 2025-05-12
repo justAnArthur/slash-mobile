@@ -58,7 +58,7 @@ export const Themes = {
     mutedForeground: "hsl(0 0% 50%)",
     accent: "hsl(0 0% 0%)",
     accentForeground: "hsl(0 0% 100%)",
-    destructive: "hsl(0 100% 50%)",
+    destructive: "hsl(0 100% 40%)",
     destructiveForeground: "hsl(0 0% 100%)",
     border: "hsl(0 0% 10%)",
     input: "hsl(0 0% 10%)",

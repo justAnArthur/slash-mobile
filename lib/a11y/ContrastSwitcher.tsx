@@ -11,10 +11,7 @@ export const ContrastSwitcher = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.header}>
-        Is enabled contrast:{" "}
-        {isHighContrast ? i18n.t("contrast.yes") : i18n.t("contrast.no")}
-      </ThemedText>
+      <ThemedText style={styles.header}>Contrast</ThemedText>
       <ThemedView style={styles.buttonContainer}>
         <Checkbox
           style={styles.checkbox}
