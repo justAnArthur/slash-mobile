@@ -62,7 +62,8 @@ const sk: Translations = {
         no_messages: "Zatiaľ žiadne správy",
         IMAGE: "Obrázok",
         LOCATION: "Pozícia"
-      }
+      },
+      selectAChat: "Prosím, vyberte chat"
     },
     chatInfo: {
       title: "Informácie o chate",

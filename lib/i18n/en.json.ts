@@ -60,7 +60,8 @@ const en = {
         no_messages: "No messages yet",
         IMAGE: "Image",
         LOCATION: "Location"
-      }
+      },
+      selectAChat: "Please select a chat"
     },
     chatInfo: {
       title: "Chat information",
