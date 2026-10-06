@@ -1,3 +1,5 @@
+> **Moved.** This code now lives in [justAnArthur/slash](https://github.com/justAnArthur/slash) under [`modules/mobile`](https://github.com/justAnArthur/slash/tree/main/modules/mobile), with its full commit history. This repository is archived.
+
 # Get started
 
 #### Install dependencies
